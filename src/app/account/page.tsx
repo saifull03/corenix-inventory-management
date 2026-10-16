@@ -45,7 +45,7 @@ interface AuthSession {
   user: any | null;
 }
 
-export default function AccountPage() {
+function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
@@ -1623,3 +1623,16 @@ export default function AccountPage() {
     </div>
   );
 }
+
+export default function AccountPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-navy-950 flex items-center justify-center text-slate-500">
+        Loading Account...
+      </div>
+    }>
+      <AccountPageContent />
+    </React.Suspense>
+  );
+}
+

@@ -120,6 +120,8 @@ export default function Footer() {
           <ul className="space-y-2 text-xs">
             <li><Link href="/about" className="hover:text-sky-600 dark:hover:text-white transition-colors">About CORENIX</Link></li>
             <li><Link href="/pc-builder" className="hover:text-sky-600 dark:hover:text-white transition-colors">PC Compatibility Builder</Link></li>
+            <li><Link href="/ups-calculator" className="hover:text-sky-600 dark:hover:text-white transition-colors font-semibold text-sky-600 dark:text-cyan-400">UPS & Power Station Calculator</Link></li>
+            <li><Link href="/emi-calculator" className="hover:text-sky-600 dark:hover:text-white transition-colors font-semibold text-purple-600 dark:text-purple-400">Credit Card EMI Calculator</Link></li>
             <li><Link href="/rma" className="hover:text-sky-600 dark:hover:text-white transition-colors">RMA Case Tracking</Link></li>
             <li><Link href="/warranty-policy" className="hover:text-sky-600 dark:hover:text-white transition-colors">Warranty & Service Policy</Link></li>
             <li><Link href="/stores" className="hover:text-sky-600 dark:hover:text-white transition-colors">Branch Showroom Locator</Link></li>

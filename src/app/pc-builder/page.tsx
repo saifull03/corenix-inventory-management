@@ -743,6 +743,13 @@ export default function PcBuilderPage() {
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
                 Recommended PSU: <strong>{recommendedPsuWattage}W+</strong>
               </span>
+              <Link
+                href="/ups-calculator"
+                className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-600 dark:text-brand-400 hover:underline mt-1"
+              >
+                <span>Calculate UPS Backup</span>
+                <span>&rarr;</span>
+              </Link>
             </div>
             <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
               <Zap className="w-5 h-5" />
@@ -761,6 +768,15 @@ export default function PcBuilderPage() {
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
                 {selectedCount} item{selectedCount === 1 ? '' : 's'} • VAT Included
               </span>
+              {totalPrice > 0 && (
+                <Link
+                  href={`/emi-calculator?amount=${Math.round(totalPrice)}&title=${encodeURIComponent('Custom PC Build')}`}
+                  className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:underline mt-1"
+                >
+                  <span>EMI from ৳{Math.round(totalPrice / 12).toLocaleString()}/mo</span>
+                  <span>&rarr;</span>
+                </Link>
+              )}
             </div>
 
             <button

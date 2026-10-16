@@ -212,15 +212,22 @@ export default async function ProductDetailPage({ params }: Props) {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+              <Link
+                href={`/emi-calculator?amount=${Math.round(currentPrice)}&title=${encodeURIComponent(product.name)}`}
+                className="p-3.5 rounded-2xl bg-white hover:bg-purple-50/50 dark:bg-navy-900 dark:hover:bg-purple-950/20 border border-slate-200/80 hover:border-purple-300 dark:border-slate-800 dark:hover:border-purple-800/60 flex items-center gap-3 shadow-2xs transition-all group"
+              >
+                <div className="w-9 h-9 rounded-xl bg-purple-50 group-hover:bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 transition-colors">
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-slate-900 dark:text-white font-bold block">0% EMI Available</span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">Up to 12 Months</span>
+                  <span className="text-slate-900 dark:text-white font-bold block group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                    0% EMI Available
+                  </span>
+                  <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
+                    From ৳{Math.round(currentPrice / 12).toLocaleString()}/mo &rarr;
+                  </span>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
 

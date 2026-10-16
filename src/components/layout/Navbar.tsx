@@ -14,7 +14,10 @@ import {
   Menu,
   X,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Calculator,
+  BatteryCharging,
+  CreditCard
 } from 'lucide-react';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import CategoryNav from '@/components/layout/CategoryNav';
@@ -25,6 +28,8 @@ export default function Navbar() {
   const router = useRouter();
   const { cartCount } = useCart();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const toolsRef = useRef<HTMLDivElement>(null);
   const [suggestions, setSuggestions] = useState<Array<{
     text: string;
     type: string;
@@ -76,11 +81,14 @@ export default function Navbar() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Click outside to close autocomplete
+  // Click outside to close autocomplete and tools dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+      }
+      if (toolsRef.current && !toolsRef.current.contains(event.target as Node)) {
+        setIsToolsOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -210,11 +218,67 @@ export default function Navbar() {
           {/* PC Builder Callout Button */}
           <Link
             href="/pc-builder"
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 dark:bg-brand-500/10 dark:text-brand-300 dark:border-brand-500/30 dark:hover:border-brand-500 font-semibold text-xs tracking-wide transition-all shadow-xs"
+            className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 dark:bg-brand-500/10 dark:text-brand-300 dark:border-brand-500/30 dark:hover:border-brand-500 font-semibold text-xs tracking-wide transition-all shadow-xs"
           >
             <Sparkles className="w-4 h-4 text-sky-600 dark:text-brand-400 animate-spin" style={{ animationDuration: '6s' }} />
             <span>PC Builder</span>
           </Link>
+
+          {/* Calculators Dropdown */}
+          <div className="relative hidden md:block" ref={toolsRef}>
+            <button
+              onClick={() => setIsToolsOpen(!isToolsOpen)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 text-xs font-semibold transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+            >
+              <Calculator className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span>Calculators</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isToolsOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn">
+                <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Engineering & Finance Tools
+                </div>
+
+                <Link
+                  href="/ups-calculator"
+                  onClick={() => setIsToolsOpen(false)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center flex-shrink-0">
+                    <BatteryCharging className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-brand-400">
+                      UPS & Power Station
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Compute load watts & backup runtime
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/emi-calculator"
+                  onClick={() => setIsToolsOpen(false)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                      Credit Card & Bank EMI
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      0% installment & schedule planner
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Theme Toggle (Dark / Light) */}
           <ThemeToggle />
@@ -284,6 +348,24 @@ export default function Navbar() {
           >
             <span>Interactive PC Builder</span>
             <Sparkles className="w-4 h-4 text-sky-600 dark:text-brand-400" />
+          </Link>
+
+          <Link
+            href="/ups-calculator"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center justify-between p-3 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 font-bold text-sm"
+          >
+            <span>UPS & Power Station Calculator</span>
+            <BatteryCharging className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+          </Link>
+
+          <Link
+            href="/emi-calculator"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center justify-between p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold text-sm"
+          >
+            <span>Credit Card 0% EMI Calculator</span>
+            <CreditCard className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </Link>
 
           <Link

@@ -10,6 +10,8 @@ Allow: /product/
 Allow: /category/
 Allow: /brand/
 Allow: /pc-builder
+Allow: /ups-calculator
+Allow: /emi-calculator
 Allow: /search
 Allow: /stores
 Allow: /about

@@ -200,16 +200,20 @@ html:not(.dark) .border-slate-700\/60 {
   border-color: #E2E8F0 !important;
 }
 
-/* Fix Typography in Light Mode (Ensure NO white text on light surfaces) */
-html:not(.dark) h1.text-white,
-html:not(.dark) h2.text-white,
-html:not(.dark) h3.text-white,
-html:not(.dark) h4.text-white,
-html:not(.dark) h5.text-white,
-html:not(.dark) h6.text-white,
-html:not(.dark) div.text-white:not(.bg-rose-500):not(.bg-rose-600):not(.bg-emerald-600):not(.bg-sky-600):not(.bg-blue-600):not(.bg-slate-900),
-html:not(.dark) span.text-white:not(.bg-rose-500):not(.bg-rose-600):not(.bg-emerald-600):not(.bg-sky-600):not(.bg-blue-600):not(.bg-slate-900):not(.bg-brand-500) {
+/* Fix Typography in Light Mode (Ensure NO white text on light surfaces, EXCEPT when intentionally on colored/dark containers) */
+html:not(.dark) h1.text-white:not(.text-force-white):not([class*="bg-purple"]):not([class*="bg-indigo"]):not([class*="from-purple"]):not([class*="from-indigo"]):not([class*="from-slate-900"]):not([class*="from-navy"]),
+html:not(.dark) h2.text-white:not(.text-force-white):not([class*="bg-purple"]):not([class*="bg-indigo"]):not([class*="from-purple"]):not([class*="from-indigo"]):not([class*="from-slate-900"]):not([class*="from-navy"]),
+html:not(.dark) h3.text-white:not(.text-force-white):not([class*="bg-purple"]):not([class*="bg-indigo"]):not([class*="from-purple"]):not([class*="from-indigo"]):not([class*="from-slate-900"]):not([class*="from-navy"]),
+html:not(.dark) h4.text-white:not(.text-force-white),
+html:not(.dark) h5.text-white:not(.text-force-white),
+html:not(.dark) h6.text-white:not(.text-force-white),
+html:not(.dark) div.text-white:not(.text-force-white):not(.bg-rose-500):not(.bg-rose-600):not(.bg-emerald-600):not(.bg-sky-600):not(.bg-blue-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-indigo-700):not(.bg-slate-900):not([class*="bg-gradient"]):not([class*="from-purple"]):not([class*="from-indigo"]):not([class*="from-slate-900"]):not([class*="from-navy"]),
+html:not(.dark) span.text-white:not(.text-force-white):not(.bg-rose-500):not(.bg-rose-600):not(.bg-emerald-600):not(.bg-sky-600):not(.bg-blue-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-indigo-700):not(.bg-slate-900):not(.bg-brand-500):not([class*="bg-gradient"]):not([class*="from-purple"]):not([class*="from-indigo"]):not([class*="from-slate-900"]):not([class*="from-navy"]) {
   color: #0F172A !important;
+}
+
+.text-force-white {
+  color: #FFFFFF !important;
 }
 
 /* Text Grays in Light Mode */
