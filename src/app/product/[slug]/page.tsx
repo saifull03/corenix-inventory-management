@@ -78,6 +78,12 @@ export default async function ProductDetailPage({ params }: Props) {
     [slug]
   );
 
+  // 1b. All product images (for gallery thumbnails)
+  const allImages = product ? await query<Array<{ image_url: string; alt_text?: string; is_primary: boolean }>>(
+    `SELECT image_url, alt_text, is_primary FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, id ASC`,
+    [product.id]
+  ) : [];
+
   if (!product) {
     notFound();
   }
@@ -132,6 +138,9 @@ export default async function ProductDetailPage({ params }: Props) {
   const currentPrice = product.discount_price || product.selling_price;
   const regularPrice = product.selling_price;
   const discountAmount = product.discount_price ? regularPrice - product.discount_price : 0;
+  const discountPercent = product.discount_price && regularPrice > 0
+    ? Math.round(((regularPrice - product.discount_price) / regularPrice) * 100)
+    : 0;
   const keyFeatures: string[] = typeof (product as any).key_features_json === 'string'
     ? JSON.parse((product as any).key_features_json || '[]')
     : (product as any).key_features_json || [];
@@ -161,7 +170,7 @@ export default async function ProductDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-100 font-sans transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-[#F3F5F8] dark:bg-navy-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -170,256 +179,215 @@ export default async function ProductDetailPage({ params }: Props) {
 
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6 flex-wrap">
-          <Link href="/" className="hover:text-sky-600 dark:hover:text-brand-400 font-medium transition-colors">Home</Link>
+        <nav className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-5 flex-wrap">
+          <Link href="/" className="hover:text-[#2340D0] dark:hover:text-[#4F6BEA] transition-colors">Home</Link>
           <span className="text-slate-300 dark:text-slate-700">/</span>
-          <Link href="/products" className="hover:text-sky-600 dark:hover:text-brand-400 font-medium transition-colors">Products</Link>
+          <Link href="/products" className="hover:text-[#2340D0] dark:hover:text-[#4F6BEA] transition-colors">Products</Link>
           <span className="text-slate-300 dark:text-slate-700">/</span>
-          <Link href={`/category/${product.category_slug}`} className="hover:text-sky-600 dark:hover:text-brand-400 font-medium transition-colors">
+          <Link href={`/category/${product.category_slug}`} className="hover:text-[#2340D0] dark:hover:text-[#4F6BEA] transition-colors">
             {product.category_name}
           </Link>
           <span className="text-slate-300 dark:text-slate-700">/</span>
-          <span className="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-md">{product.name}</span>
+          <span className="text-slate-700 dark:text-slate-300 font-medium truncate max-w-xs">{product.name}</span>
         </nav>
 
-        {/* TOP SECTION: Gallery + Key Info & Branch Availability */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-          {/* Left: Product Image Gallery */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="aspect-square bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 flex items-center justify-center relative overflow-hidden shadow-xs dark:shadow-2xl">
-              {product.discount_price && product.discount_price < product.selling_price && (
-                <div className="absolute top-4 left-4 bg-rose-500 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                  Save ৳{discountAmount.toLocaleString()}
-                </div>
-              )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={product.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=800&q=80'}
-                alt={product.name}
-                className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
-              />
+        {/* ─── MAIN PRODUCT PANEL ─── */}
+        <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+
+            {/* Left — Interactive Gallery (client) */}
+            <div className="border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 p-5">
+              <ProductDetailActions product={product} allImages={allImages} />
             </div>
 
-            {/* Quick badges under image */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-sky-50 dark:bg-brand-500/10 text-sky-600 dark:text-brand-400 flex items-center justify-center flex-shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-slate-900 dark:text-white font-bold block">{product.warranty_period}</span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">Official Brand Warranty</span>
-                </div>
-              </div>
+            {/* Right — Product Info */}
+            <div className="p-6 flex flex-col gap-5">
 
-              <Link
-                href={`/emi-calculator?amount=${Math.round(currentPrice)}&title=${encodeURIComponent(product.name)}`}
-                className="p-3.5 rounded-2xl bg-white hover:bg-purple-50/50 dark:bg-navy-900 dark:hover:bg-purple-950/20 border border-slate-200/80 hover:border-purple-300 dark:border-slate-800 dark:hover:border-purple-800/60 flex items-center gap-3 shadow-2xs transition-all group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-purple-50 group-hover:bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 transition-colors">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-slate-900 dark:text-white font-bold block group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                    0% EMI Available
-                  </span>
-                  <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
-                    From ৳{Math.round(currentPrice / 12).toLocaleString()}/mo &rarr;
-                  </span>
-                </div>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: Product Details, Pricing, Stock & Actions */}
-          <div className="lg:col-span-7 space-y-6">
-            <div>
-              <div className="flex items-center gap-2.5 text-xs mb-3 flex-wrap">
-                <Link
-                  href={`/brand/${product.brand_slug}`}
-                  className="px-3 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-brand-300 dark:border-slate-700 font-bold uppercase tracking-wider transition-colors"
-                >
-                  {product.brand_name}
-                </Link>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 font-mono text-[11px]">
-                  SKU: {product.sku}
-                </span>
-                {product.model && (
-                  <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 font-mono text-[11px]">
-                    Model: {product.model}
-                  </span>
-                )}
-                <span className={`px-2.5 py-1 rounded-lg font-bold text-[11px] uppercase tracking-wider ${
-                  product.stock_status === 'Out Of Stock'
-                    ? 'bg-rose-100 text-rose-800 border border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800'
-                    : product.stock_status === 'Pre-Order'
-                    ? 'bg-purple-100 text-purple-800 border border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800'
-                    : product.stock_status === 'Up Coming'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800'
-                    : product.stock_status === '2-3 Days'
-                    ? 'bg-sky-100 text-sky-800 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800'
-                    : product.stock_status === 'Call for Price'
-                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800'
-                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-                }`}>
-                  ● {product.stock_status || 'In Stock'}
-                </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+              {/* Title */}
+              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white leading-snug tracking-tight">
                 {product.name}
               </h1>
 
-              {/* Rating and Reviews */}
-              <div className="flex items-center gap-3 mt-3 text-xs flex-wrap">
-                <div className="flex items-center gap-1.5 text-amber-500">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="font-bold text-slate-800 dark:text-slate-100">{Number(product.rating_avg || 5.0).toFixed(1)}</span>
-                  <span className="text-slate-500 dark:text-slate-400 font-normal">({product.rating_count || 12} reviews)</span>
-                </div>
-                <span className="text-slate-300 dark:text-slate-700">|</span>
-                <span className="inline-flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  Verifiable Genuine Serial
-                </span>
-              </div>
-            </div>
-
-            {/* Price Box */}
-            <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 flex items-baseline justify-between flex-wrap gap-4 shadow-xs">
-              <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
-                  {product.stock_status === 'Call for Price' ? 'Pricing' : 'Cash Special Price'}
-                </span>
-                <div className="flex items-baseline gap-3 flex-wrap">
-                  {product.stock_status === 'Call for Price' ? (
-                    <span className="text-3xl sm:text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">
-                      Call for Price
+              {/* Price + Variant Chip Row */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {product.stock_status === 'Call for Price' ? (
+                  <span className="text-2xl font-bold text-[#2340D0] dark:text-[#4F6BEA]">Call for Price</span>
+                ) : (
+                  <>
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight font-mono">
+                      ৳{currentPrice.toLocaleString()}
                     </span>
-                  ) : (
-                    <>
-                      <span className="text-3xl sm:text-4xl font-extrabold text-sky-600 dark:text-brand-400 tracking-tight">
-                        ৳{currentPrice.toLocaleString()}
+                    <span className="text-sm text-slate-500 dark:text-slate-400">(Cash Price)</span>
+                    {product.discount_price && product.discount_price < product.selling_price && (
+                      <span className="text-base text-slate-400 dark:text-slate-500 line-through font-mono">
+                        ৳{regularPrice.toLocaleString()}
                       </span>
-                      {product.discount_price && product.discount_price < product.selling_price && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-400 dark:text-slate-500 line-through font-medium">
-                            Regular: ৳{regularPrice.toLocaleString()}
-                          </span>
-                          <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/60">
-                            Save ৳{discountAmount.toLocaleString()} ({product.discount_percent}% OFF)
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                    )}
+                  </>
+                )}
+                {(product.model || product.sku) && (
+                  <span className="ml-auto px-3 py-1 rounded-lg border border-[#B8400A] text-[#B8400A] dark:text-[#FF8A47] dark:border-[#FF8A47]/50 text-xs font-semibold">
+                    {product.model || product.sku}
+                  </span>
+                )}
               </div>
 
-              {product.stock_status !== 'Call for Price' && (
-                <div className="text-right">
-                  <span className="text-xs text-slate-500 dark:text-slate-400 block">Estimated EMI</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-white px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 inline-block mt-0.5">
-                    ৳{(Math.round(currentPrice / 12)).toLocaleString()} / mo
-                  </span>
+              {/* Quick-action buttons row: Compare, Brand Store, EMI */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href={`/brand/${product.brand_slug}`}
+                  className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-medium hover:border-[#2340D0] hover:text-[#2340D0] dark:hover:border-[#4F6BEA] dark:hover:text-[#4F6BEA] transition-colors"
+                >
+                  <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+                  <span>{product.brand_name} Store</span>
+                </Link>
+                <Link
+                  href={`/emi-calculator?amount=${Math.round(currentPrice)}&title=${encodeURIComponent(product.name)}`}
+                  className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-medium hover:border-purple-400 hover:text-purple-600 dark:hover:border-purple-500 dark:hover:text-purple-400 transition-colors"
+                >
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span>View EMI Options</span>
+                </Link>
+              </div>
+
+              {/* Key Features List */}
+              {keyFeatures.length > 0 && (
+                <div className="p-4 bg-[#F3F5F8] dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <ul className="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+                    {keyFeatures.slice(0, 5).map((kf, i) => (
+                      <li key={i} className="flex items-start gap-2 leading-snug">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 mt-1.5 flex-shrink-0" />
+                        <span>{kf}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
-            </div>
 
-            {/* Key Features Bullet Points */}
-            {keyFeatures.length > 0 && (
-              <div className="space-y-2.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                  Key Specifications:
-                </h4>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  {keyFeatures.map((kf, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2.5 bg-white dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-800/80 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 transition-colors shadow-2xs"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-brand-400 mt-1.5 flex-shrink-0"></span>
-                      <span className="font-medium leading-relaxed">{kf}</span>
-                    </li>
+              {/* Variant Selectors (Storage, Color, etc.) */}
+              {specs.length > 0 && (
+                <div className="space-y-3">
+                  {Array.from(new Set(specs.map(s => s.custom_label || s.attribute_name))).slice(0, 2).map((attrName) => {
+                    const attrValues = specs.filter(s => (s.custom_label || s.attribute_name) === attrName);
+                    return (
+                      <div key={attrName} className="flex items-center gap-3 flex-wrap">
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 w-20 flex-shrink-0">{attrName} :</span>
+                        <div className="flex gap-2 flex-wrap">
+                          {attrValues.map((v, vi) => (
+                            <span
+                              key={vi}
+                              className={`px-3 py-1 rounded-lg border text-xs font-semibold cursor-pointer transition-colors ${
+                                vi === 0
+                                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white'
+                                  : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              {v.attribute_value}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Meta Info Grid: Condition, SKU, Booking, Points */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                {[
+                  {
+                    icon: <ShieldCheck className="w-4 h-4 text-sky-500" />,
+                    label: 'CONDITION',
+                    value: product.stock_status === 'Out Of Stock' ? 'Unavailable'
+                      : product.stock_status === 'Pre-Order' ? 'Pre-order'
+                      : 'Available',
+                    color: product.stock_status === 'Out Of Stock' ? 'text-rose-500' : product.stock_status === 'Pre-Order' ? 'text-purple-500' : 'text-emerald-600 dark:text-emerald-400',
+                  },
+                  {
+                    icon: <Package className="w-4 h-4 text-slate-400" />,
+                    label: 'SKU',
+                    value: product.sku,
+                    color: 'text-slate-700 dark:text-slate-300',
+                  },
+                  {
+                    icon: <CreditCard className="w-4 h-4 text-amber-500" />,
+                    label: 'BOOKING',
+                    value: currentPrice > 0 ? Math.round(currentPrice * 0.1).toLocaleString() : '—',
+                    color: 'text-slate-700 dark:text-slate-300',
+                  },
+                  {
+                    icon: <Star className="w-4 h-4 text-amber-400 fill-amber-400" />,
+                    label: 'POINTS',
+                    value: Math.round(currentPrice / 400).toString(),
+                    color: 'text-amber-600 dark:text-amber-400',
+                  },
+                ].map((meta) => (
+                  <div
+                    key={meta.label}
+                    className="flex flex-col items-center gap-1 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-[#F3F5F8] dark:bg-slate-800/40 text-center"
+                  >
+                    {meta.icon}
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{meta.label}</span>
+                    <span className={`font-semibold truncate max-w-full ${meta.color}`}>{meta.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Rating Row */}
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {[1,2,3,4,5].map((s) => (
+                    <Star key={s} className={`w-3.5 h-3.5 ${Number(product.rating_avg || 4.5) >= s ? 'fill-current text-amber-400' : 'text-slate-300 dark:text-slate-600'}`} />
                   ))}
-                </ul>
-              </div>
-            )}
-
-            {/* LOCATION-BASED INVENTORY (Requirement 14 & 26) */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 space-y-3.5 shadow-xs">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-sky-600 dark:text-brand-400" />
-                  Live Branch & Warehouse Availability:
+                </div>
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
+                  {Number(product.rating_avg || 4.5).toFixed(1)}
                 </span>
-                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                  totalAvailableStock > 0
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-                    : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-300'
-                }`}>
-                  {totalAvailableStock > 0 ? `Total Available: ${totalAvailableStock} Units` : 'Out of Stock'}
+                <span>({product.rating_count || 0} reviews)</span>
+                <span className="text-slate-300 dark:text-slate-700">|</span>
+                <span className={`font-medium ${totalAvailableStock > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500'}`}>
+                  {totalAvailableStock > 0 ? `${totalAvailableStock} in stock` : product.stock_status || 'Check availability'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {inventory.map((inv) => {
-                  const avail = Math.max(0, inv.quantity - inv.reserved_qty);
-                  return (
-                    <div
-                      key={inv.branch_id}
-                      className="p-3 rounded-xl bg-slate-50 dark:bg-navy-950 border border-slate-200/80 dark:border-slate-800 text-center"
-                    >
-                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block truncate" title={inv.branch_name}>
-                        {inv.branch_name || inv.branch_code}
-                      </span>
-                      <span className={`text-sm font-extrabold mt-1 block ${
-                        avail > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'
-                      }`}>
-                        {avail > 0 ? `${avail} in Stock` : 'Out of Stock'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* CTA Buttons: Add to Cart, Buy Now, Add to PC Builder */}
-            <ProductDetailActions product={product} />
+            </div>{/* /right */}
           </div>
         </div>
 
-        {/* BOTTOM SECTION: Tabs / Rich Content Overview & Dynamic Specifications */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
-          <div className="lg:col-span-8 space-y-8">
-            {/* Overview & Description */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-xs">
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
-                <Layers className="w-5 h-5 text-sky-600 dark:text-brand-400" />
-                <span>Product Overview & Details</span>
-              </h2>
-              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4 whitespace-pre-line">
-                {(product as any).overview || 'No additional overview provided.'}
+        {/* ─── LOWER SECTION: Tabs & Related ─── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+          {/* Left + Center rich content */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Overview */}
+            {(product as any).overview && (
+              <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                  <Layers className="w-5 h-5 text-[#2340D0] dark:text-[#4F6BEA]" />
+                  Product Overview
+                </h2>
+                <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                  {(product as any).overview}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Dynamic Specifications Table (Requirement 10 & 11) */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 space-y-6 shadow-xs">
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
-                <Layers className="w-5 h-5 text-sky-600 dark:text-brand-400" />
-                <span>Technical Specifications</span>
-              </h2>
-
-              {specs.length > 0 ? (
-                <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
-                  <table className="w-full text-left text-xs border-collapse">
+            {/* Specifications Table */}
+            {specs.length > 0 && (
+              <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                  <Layers className="w-5 h-5 text-[#2340D0] dark:text-[#4F6BEA]" />
+                  Technical Specifications
+                </h2>
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+                  <table className="w-full text-left text-sm border-collapse">
                     <tbody>
                       {specs.map((s, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                          <td className="py-3 px-4 font-semibold text-slate-500 dark:text-slate-400 w-1/3 bg-slate-50/60 dark:bg-slate-900/40">
+                        <tr key={idx} className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-[#F3F5F8] dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3 px-4 font-semibold text-slate-500 dark:text-slate-400 w-2/5 bg-[#F3F5F8]/70 dark:bg-slate-900/40 text-xs uppercase tracking-wide">
                             {s.custom_label || s.attribute_name}
                           </td>
-                          <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">
+                          <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200 text-sm">
                             {s.attribute_value}
                           </td>
                         </tr>
@@ -427,70 +395,90 @@ export default async function ProductDetailPage({ params }: Props) {
                     </tbody>
                   </table>
                 </div>
-              ) : (
-                <p className="text-xs text-slate-400">Standard specifications apply.</p>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* What's in the Box & Warranty */}
+            {/* Box Contents & Warranty */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 space-y-2 shadow-xs">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Package className="w-4 h-4 text-sky-600 dark:text-brand-400" />
-                  <span>What&apos;s in the Box</span>
+              <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                  <Package className="w-4 h-4 text-[#2340D0] dark:text-[#4F6BEA]" />
+                  What&apos;s in the Box
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {(product as any).what_in_box || 'Standard retail package accessories and official documents.'}
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {(product as any).what_in_box || 'Standard retail package with official accessories and documents.'}
                 </p>
               </div>
-
-              <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 space-y-2 shadow-xs">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-sky-600 dark:text-brand-400" />
-                  <span>Warranty & Service Policy</span>
+              <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                  <ShieldCheck className="w-4 h-4 text-[#2340D0] dark:text-[#4F6BEA]" />
+                  Warranty &amp; Service
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {product.warranty_period}. Serviced at CORENIX Agargaon RMA Hub or official authorized distributor centers with replacement guarantee.
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {product.warranty_period}. Serviced at CORENIX RMA Hub or authorized distributor centers.
                 </p>
               </div>
             </div>
+
+            {/* Branch Inventory */}
+            {inventory.length > 0 && (
+              <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-[#2340D0] dark:text-[#4F6BEA]" />
+                    Live Branch Availability
+                  </h3>
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                    totalAvailableStock > 0
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                      : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300'
+                  }`}>
+                    {totalAvailableStock > 0 ? `${totalAvailableStock} units available` : 'Out of Stock'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {inventory.map((inv) => {
+                    const avail = Math.max(0, inv.quantity - inv.reserved_qty);
+                    return (
+                      <div key={inv.branch_id} className="p-3 rounded-xl bg-[#F3F5F8] dark:bg-navy-950 border border-slate-200 dark:border-slate-800 text-center">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block truncate">{inv.branch_name || inv.branch_code}</span>
+                        <span className={`text-sm font-bold mt-1 block ${avail > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'}`}>
+                          {avail > 0 ? `${avail} in Stock` : 'Out of Stock'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Column: Related Hardware Recommendations */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="p-6 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-xs">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center justify-between">
-                <span>Related Products</span>
-                <Link href={`/category/${product.category_slug}`} className="text-xs text-sky-600 dark:text-brand-400 hover:underline font-semibold">
-                  View More
-                </Link>
-              </h3>
-
+          {/* Right Sidebar */}
+          <div className="space-y-4">
+            <div className="bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Related Products</h3>
+                <Link href={`/category/${product.category_slug}`} className="text-xs text-[#2340D0] dark:text-[#4F6BEA] hover:underline font-semibold">View All</Link>
+              </div>
               <div className="space-y-3">
-                {related.map((rp, rpIdx) => (
+                {related.map((rp, idx) => (
                   <Link
-                    key={`${rp.id}-${rpIdx}`}
+                    key={`${rp.id}-${idx}`}
                     href={`/product/${rp.slug}`}
-                    className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-900/60 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3 transition-colors group"
+                    className="flex gap-3 p-2.5 rounded-xl hover:bg-[#F3F5F8] dark:hover:bg-slate-800 transition-colors group"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={rp.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=400&q=80'}
+                      src={rp.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=200&q=80'}
                       alt={rp.name}
-                      className="w-14 h-14 object-contain bg-white dark:bg-navy-950 rounded-xl p-1 border border-slate-200/60 dark:border-slate-800"
+                      className="w-14 h-14 object-contain bg-white dark:bg-slate-900 rounded-lg p-1 border border-slate-200 dark:border-slate-700 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-brand-300 truncate">
-                        {rp.name}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-bold text-sky-600 dark:text-brand-400">
-                          ৳{(rp.discount_price || rp.selling_price).toLocaleString()}
-                        </span>
+                      <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#2340D0] dark:group-hover:text-[#4F6BEA] line-clamp-2 leading-snug">{rp.name}</h4>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white font-mono">৳{(rp.discount_price || rp.selling_price).toLocaleString()}</span>
                         {rp.discount_price && (
-                          <span className="text-[10px] text-slate-400 line-through">
-                            ৳{rp.selling_price.toLocaleString()}
-                          </span>
+                          <span className="text-[11px] text-slate-400 line-through font-mono">৳{rp.selling_price.toLocaleString()}</span>
                         )}
                       </div>
                     </div>
@@ -499,18 +487,16 @@ export default async function ProductDetailPage({ params }: Props) {
               </div>
             </div>
 
-            {/* RMA Assistance Card */}
-            <div className="p-6 rounded-3xl bg-gradient-to-br from-sky-50 to-blue-50/50 dark:from-slate-900 dark:to-navy-900 border border-sky-200/80 dark:border-brand-500/30 space-y-3 shadow-xs">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-sky-700 dark:text-brand-400">
-                Official After-Sales Guarantee
-              </span>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Need Technical Support or RMA Service?</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Direct component replacement and status tracking at our dedicated Agargaon RMA Hub.
+            {/* RMA Card */}
+            <div className="bg-gradient-to-br from-[#EEF1FD] to-[#DCE3FB] dark:from-slate-900 dark:to-navy-900 border border-[#B9C6F6] dark:border-[#2340D0]/30 rounded-2xl p-5">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#2340D0] dark:text-[#4F6BEA]">After-Sales Support</span>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-1">Need RMA Service?</h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1">
+                Live tracking at our dedicated RMA Hub with guaranteed component replacement.
               </p>
               <Link
                 href="/rma"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 dark:text-brand-400 hover:text-sky-700 dark:hover:text-brand-300"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2340D0] dark:text-[#4F6BEA] hover:underline mt-3"
               >
                 <span>Track or Claim RMA</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -518,6 +504,24 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Related Products Card Grid */}
+        {related.length > 0 && (
+          <section className="mb-16">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">More from {product.category_name}</h2>
+              <Link href={`/category/${product.category_slug}`} className="text-xs text-[#2340D0] dark:text-[#4F6BEA] hover:underline font-semibold flex items-center gap-1">
+                <span>View all</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {related.map((rp, rpIdx) => (
+                <ProductCard key={`${rp.id}-${rpIdx}`} product={rp} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />
