@@ -15,6 +15,7 @@ import {
   Keyboard,
   Mouse,
   BatteryCharging,
+  Wifi,
   Package,
   CheckCircle2,
   AlertTriangle,
@@ -111,6 +112,7 @@ export default function PcBuilderPage() {
     { key: 'monitor', name: 'Monitor / Display', categoryLabel: 'Monitors', icon: Monitor, required: false, product: null, baseWattage: 0 },
     { key: 'keyboard', name: 'Keyboard', categoryLabel: 'Keyboard', icon: Keyboard, required: false, product: null, baseWattage: 5 },
     { key: 'mouse', name: 'Gaming Mouse', categoryLabel: 'Mouse', icon: Mouse, required: false, product: null, baseWattage: 5 },
+    { key: 'network', name: 'Wi-Fi Adapter / LAN Card', categoryLabel: 'Networking', icon: Wifi, required: false, product: null, baseWattage: 5 },
     { key: 'ups', name: 'UPS (Power Backup)', categoryLabel: 'UPS', icon: BatteryCharging, required: false, product: null, baseWattage: 0 },
   ]);
 
@@ -389,6 +391,50 @@ export default function PcBuilderPage() {
           catSlug.includes('mouse') ||
           catSlug.includes('mice') ||
           catName.includes('mouse')
+        );
+      }
+
+      case 'network': {
+        if (
+          catSlug.includes('motherboard') ||
+          catName.includes('motherboard') ||
+          name.includes('motherboard') ||
+          name.includes('mainboard') ||
+          name.includes('power adapter') ||
+          name.includes('charger') ||
+          name.includes('hdmi adapter') ||
+          name.includes('displayport') ||
+          name.includes('router') ||
+          name.includes('access point') ||
+          name.includes('switch')
+        ) {
+          return false;
+        }
+        return (
+          comp === 'network' ||
+          comp === 'wifi' ||
+          comp === 'lan' ||
+          catSlug.includes('network-adapter') ||
+          catSlug.includes('lan-card') ||
+          catSlug.includes('network') ||
+          catSlug.includes('adapter') ||
+          catName.includes('network adapter') ||
+          catName.includes('network') ||
+          catName.includes('lan') ||
+          catName.includes('wifi') ||
+          name.includes('wifi') ||
+          name.includes('wi-fi') ||
+          name.includes('wireless adapter') ||
+          name.includes('lan card') ||
+          name.includes('network adapter') ||
+          name.includes('ethernet adapter') ||
+          name.includes('pci-e network') ||
+          name.includes('pcie wifi') ||
+          name.includes('usb wifi') ||
+          name.includes('usb wireless') ||
+          name.includes('gigabit pci') ||
+          name.includes('wireless nano') ||
+          name.includes('dual band wireless')
         );
       }
 
@@ -835,6 +881,7 @@ export default function PcBuilderPage() {
               <option value="cooler">Cooling Fan</option>
               <option value="storage">Extra Storage</option>
               <option value="peripherals">Peripherals</option>
+              <option value="network">Networking (Wi-Fi / LAN)</option>
             </select>
             <button
               onClick={handleAddCustomSlot}
@@ -1356,12 +1403,15 @@ export default function PcBuilderPage() {
                 {/* Quotation Header with Brand Logo & Company Info */}
                 <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3 mb-3">
                   <div>
-                    <div className="flex items-center gap-2.5 mb-1">
-                      <div className="w-8 h-8 rounded-lg bg-sky-600 flex items-center justify-center text-white font-black text-base shadow-sm">
-                        C
-                      </div>
-                      <h2 className="text-2xl font-black tracking-tight text-slate-950">
-                        CORENIX COMPUTERS & TECH LTD.
+                    <div className="flex items-center gap-2.5 mb-1.5">
+                      <img
+                        src="/images/logo.png"
+                        alt="CORENIX"
+                        className="h-8 w-auto object-contain"
+                      />
+                      <span className="text-sm font-bold text-slate-300">|</span>
+                      <h2 className="text-xl font-black tracking-tight text-slate-950">
+                        COMPUTERS & TECH LTD.
                       </h2>
                     </div>
                     <p className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-1">

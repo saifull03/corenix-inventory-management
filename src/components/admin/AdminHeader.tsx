@@ -57,13 +57,17 @@ export default function AdminHeader() {
         </button>
 
         {/* Mobile Header Brand Display (when sidebar is closed) */}
-        <div className="flex lg:hidden items-center gap-1.5 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center font-bold text-white text-xs shadow-2xs shrink-0">
-            C
-          </div>
-          <span className="font-black text-sm text-slate-900 dark:text-white tracking-tight truncate">
-            CORENIX
-          </span>
+        <div className="flex lg:hidden items-center min-w-0">
+          <img
+            src="/images/logo.png"
+            alt="CORENIX"
+            className="h-7 w-auto object-contain dark:hidden"
+          />
+          <img
+            src="/images/logo-dark.png"
+            alt="CORENIX"
+            className="h-7 w-auto object-contain hidden dark:block"
+          />
         </div>
 
         {/* Branch Context Selector (Desktop & Tablet) */}

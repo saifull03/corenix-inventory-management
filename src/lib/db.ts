@@ -25,16 +25,30 @@ if (process.env.NODE_ENV !== 'production') {
 export default pool;
 
 export async function query<T = any>(sql: string, params: any[] = []): Promise<T> {
-  const [rows] = await pool.query(sql, params);
-  return rows as T;
+  try {
+    const [rows] = await pool.query(sql, params);
+    return rows as T;
+  } catch (error: any) {
+    console.error('Database query error:', error?.message || error);
+    // If database connection is down, return empty array for SELECT queries to avoid SSR 500 crash
+    if (sql.trim().toUpperCase().startsWith('SELECT')) {
+      return [] as unknown as T;
+    }
+    throw error;
+  }
 }
 
 export async function queryOne<T = any>(sql: string, params: any[] = []): Promise<T | null> {
-  const rows = await query<any[]>(sql, params);
-  if (rows && rows.length > 0) {
-    return rows[0] as T;
+  try {
+    const rows = await query<any[]>(sql, params);
+    if (rows && rows.length > 0) {
+      return rows[0] as T;
+    }
+    return null;
+  } catch (error: any) {
+    console.error('Database queryOne error:', error?.message || error);
+    return null;
   }
-  return null;
 }
 
 export async function getConnection(): Promise<mysql.PoolConnection> {

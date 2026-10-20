@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Cpu, ShieldCheck, MapPin, Phone, Mail, Clock, CreditCard, Award, Truck } from 'lucide-react';
+import { ShieldCheck, MapPin, Phone, Mail, Clock, CreditCard, Award, Truck } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -54,12 +54,18 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand & Overview */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center shadow-sm">
-              <Cpu className="w-5 h-5 text-white font-bold" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">CORENIX</span>
-          </div>
+          <Link href="/" className="inline-block group">
+            <img
+              src="/images/logo.png"
+              alt="CORENIX Logo"
+              className="h-9 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+            />
+            <img
+              src="/images/logo-dark.png"
+              alt="CORENIX Logo"
+              className="h-9 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+            />
+          </Link>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             CORENIX is Bangladesh&apos;s state-of-the-art enterprise computing and enthusiast hardware destination. Complete database-driven retail, inventory, POS, and custom PC engineering.
           </p>

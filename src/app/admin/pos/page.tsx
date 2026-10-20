@@ -950,8 +950,17 @@ export default function PosPage() {
               <div className="print-receipt-wrapper invoice-print p-6 sm:p-8 rounded-3xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-xs space-y-3.5 print:p-0 print:border-none print:shadow-none print:text-black">
                 {/* Store Header */}
                 <div className="invoice-header text-center space-y-1 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
-                  <div className="invoice-header-logo inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-900 text-white dark:bg-brand-500 dark:text-navy-950 font-black text-base mb-1 print:bg-black print:text-white">
-                    C
+                  <div className="invoice-header-logo flex items-center justify-center mb-1">
+                    <img
+                      src="/images/logo.png"
+                      alt="CORENIX"
+                      className="h-9 w-auto object-contain dark:hidden print:block"
+                    />
+                    <img
+                      src="/images/logo-dark.png"
+                      alt="CORENIX"
+                      className="h-9 w-auto object-contain hidden dark:block print:hidden"
+                    />
                   </div>
                   <h2 className="invoice-header-title text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase print:text-black">
                     CORENIX TECHNOLOGY RETAIL

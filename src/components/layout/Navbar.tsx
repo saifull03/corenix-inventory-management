@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import {
   Search,
   ShoppingCart,
-  Cpu,
   User,
   ShieldCheck,
   ChevronDown,
@@ -107,18 +106,17 @@ export default function Navbar() {
       {/* Main navigation row */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-            <Cpu className="w-6 h-6 text-white font-bold" />
-          </div>
-          <div>
-            <div className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
-              CORENIX<span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-brand-400"></span>
-            </div>
-            <div className="text-[10px] uppercase font-bold tracking-widest text-sky-600 dark:text-cyan-400 -mt-0.5">
-              Next-Gen Tech
-            </div>
-          </div>
+        <Link href="/" className="flex items-center group flex-shrink-0">
+          <img
+            src="/images/logo.png"
+            alt="CORENIX Logo"
+            className="h-9 sm:h-10 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+          />
+          <img
+            src="/images/logo-dark.png"
+            alt="CORENIX Logo"
+            className="h-9 sm:h-10 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+          />
         </Link>
 
         {/* Global Search Bar with Live Suggestions */}

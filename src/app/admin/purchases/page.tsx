@@ -4063,13 +4063,15 @@ function PurchasesContent() {
                 {/* Clean Official Header */}
                 <div className="flex items-start justify-between border-b-2 border-slate-900 pb-5">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-sky-600 text-white font-black flex items-center justify-center text-sm">
-                        C
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="/images/logo.png"
+                        alt="CORENIX"
+                        className="h-8 w-auto object-contain"
+                      />
                       <div>
                         <h1 className="text-xl font-black tracking-tight text-slate-900 uppercase">
-                          CORENIX ENTERPRISE
+                          ENTERPRISE
                         </h1>
                         <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
                           Custom High Performance Systems & Tech Distribution

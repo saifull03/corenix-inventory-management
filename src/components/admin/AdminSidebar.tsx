@@ -171,18 +171,20 @@ export default function AdminSidebar() {
         <div>
           {/* Brand Header & Toggle Controls */}
           <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/50 dark:bg-navy-950/40">
-            <Link href="/admin" onClick={handleLinkClick} className="flex items-center gap-2.5 min-w-0 group">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center font-bold text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                C
-              </div>
-              <div className="min-w-0">
-                <span className="text-base font-black text-slate-900 dark:text-white tracking-wider block truncate">
-                  CORENIX
-                </span>
-                <span className="text-[10px] text-sky-600 dark:text-brand-400 font-bold uppercase tracking-wider block -mt-1 truncate">
-                  Enterprise Hub
-                </span>
-              </div>
+            <Link href="/admin" onClick={handleLinkClick} className="flex items-center gap-2 min-w-0 group">
+              <img
+                src="/images/logo.png"
+                alt="CORENIX"
+                className="h-8 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+              />
+              <img
+                src="/images/logo-dark.png"
+                alt="CORENIX"
+                className="h-8 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+              />
+              <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 dark:bg-sky-950/80 dark:text-cyan-300 border border-sky-200 dark:border-sky-800 tracking-wider">
+                Hub
+              </span>
             </Link>
 
             <div className="flex items-center gap-1 shrink-0">
