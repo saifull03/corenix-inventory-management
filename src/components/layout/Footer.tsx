@@ -58,12 +58,12 @@ export default function Footer() {
             <img
               src="/images/logo.png"
               alt="CORENIX Logo"
-              className="h-9 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+              className="h-14 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
             />
             <img
               src="/images/logo-dark.png"
               alt="CORENIX Logo"
-              className="h-9 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+              className="h-14 w-auto object-contain hidden dark:block brightness-0 invert group-hover:scale-105 transition-transform"
             />
           </Link>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">

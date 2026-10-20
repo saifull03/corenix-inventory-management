@@ -61,12 +61,12 @@ export default function AdminHeader() {
           <img
             src="/images/logo.png"
             alt="CORENIX"
-            className="h-7 w-auto object-contain dark:hidden"
+            className="h-10 w-auto object-contain dark:hidden"
           />
           <img
             src="/images/logo-dark.png"
             alt="CORENIX"
-            className="h-7 w-auto object-contain hidden dark:block"
+            className="h-10 w-auto object-contain hidden dark:block brightness-0 invert"
           />
         </div>
 

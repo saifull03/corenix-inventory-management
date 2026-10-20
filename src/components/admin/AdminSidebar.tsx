@@ -175,12 +175,12 @@ export default function AdminSidebar() {
               <img
                 src="/images/logo.png"
                 alt="CORENIX"
-                className="h-8 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+                className="h-11 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
               />
               <img
                 src="/images/logo-dark.png"
                 alt="CORENIX"
-                className="h-8 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+                className="h-11 w-auto object-contain hidden dark:block brightness-0 invert group-hover:scale-105 transition-transform"
               />
               <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 dark:bg-sky-950/80 dark:text-cyan-300 border border-sky-200 dark:border-sky-800 tracking-wider">
                 Hub
@@ -256,4 +256,3 @@ export default function AdminSidebar() {
     </>
   );
 }
-

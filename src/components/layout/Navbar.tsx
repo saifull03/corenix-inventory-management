@@ -110,12 +110,12 @@ export default function Navbar() {
           <img
             src="/images/logo.png"
             alt="CORENIX Logo"
-            className="h-9 sm:h-10 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
+            className="h-12 sm:h-14 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
           />
           <img
             src="/images/logo-dark.png"
             alt="CORENIX Logo"
-            className="h-9 sm:h-10 w-auto object-contain hidden dark:block group-hover:scale-105 transition-transform"
+            className="h-12 sm:h-14 w-auto object-contain hidden dark:block brightness-0 invert group-hover:scale-105 transition-transform"
           />
         </Link>
 
