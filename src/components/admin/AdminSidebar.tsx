@@ -28,6 +28,7 @@ import {
   LayoutTemplate,
   X,
   PanelLeftClose,
+  MessageSquareWarning,
 } from 'lucide-react';
 import { useAdminSidebar } from './AdminSidebarContext';
 
@@ -54,6 +55,7 @@ const rawMenuItems: MenuItemDef[] = [
   { label: 'Stock Transfer', href: '/admin/inventory/transfer', icon: ArrowRightLeft, indent: true },
   { label: 'Branches & Locations', href: '/admin/branches', icon: Building2 },
   { label: 'Customer Orders', href: '/admin/orders', icon: ShoppingCart },
+  { label: 'Customer Complaints', href: '/admin/complaints', icon: MessageSquareWarning },
   { label: 'Point of Sale (POS)', href: '/admin/pos', icon: Receipt },
   { label: 'Purchases & Procurement', href: '/admin/purchases', icon: Truck, purchaseAccess: true },
   { label: 'Other House & Lend', href: '/admin/purchases/other-house', icon: Store, indent: true, purchaseAccess: true },

@@ -131,7 +131,7 @@ export default function Footer() {
             <li><Link href="/rma" className="hover:text-sky-600 dark:hover:text-white transition-colors">RMA Case Tracking</Link></li>
             <li><Link href="/warranty-policy" className="hover:text-sky-600 dark:hover:text-white transition-colors">Warranty & Service Policy</Link></li>
             <li><Link href="/stores" className="hover:text-sky-600 dark:hover:text-white transition-colors">Branch Showroom Locator</Link></li>
-            <li><Link href="/complaint" className="hover:text-sky-600 dark:hover:text-white transition-colors">Executive Complaint Cell</Link></li>
+            <li><Link href="/complaint" className="hover:text-sky-600 dark:hover:text-white transition-colors">Submit a Complaint</Link></li>
             <li><Link href="/admin" className="hover:text-sky-600 dark:hover:text-brand-400 font-semibold transition-colors">Admin & Staff Portal</Link></li>
           </ul>
         </div>
