@@ -24,6 +24,7 @@ import {
   Star,
   Loader2,
   TrendingUp,
+  AlertCircle,
 } from 'lucide-react';
 
 export interface ProductItem {
@@ -39,6 +40,12 @@ export interface ProductItem {
   brand_name: string;
   category_name: string;
   primary_image?: string | null;
+  overview?: string | null;
+  key_features_json?: string | null;
+  specification_count?: number | string | null;
+  meta_title?: string | null;
+  meta_desc?: string | null;
+  focus_keyword?: string | null;
   purchase_cost: number;
   selling_price: number;
   discount_price?: number | null;
@@ -58,7 +65,29 @@ interface Props {
 }
 
 type SearchFieldFilter = 'all' | 'name' | 'model' | 'sku' | 'barcode';
-type HighlightFilter = 'all' | 'trending' | 'hot_deals' | 'pc_builder';
+type HighlightFilter = 'all' | 'trending' | 'hot_deals' | 'pc_builder' | 'missing_details';
+
+function getMissingDetails(product: ProductItem): string[] {
+  const missing: string[] = [];
+  if (!product.primary_image?.trim()) missing.push('Product image');
+  if (!product.overview?.trim()) missing.push('Overview');
+
+  let hasKeyFeature = false;
+  try {
+    const features = JSON.parse(product.key_features_json || '[]');
+    hasKeyFeature = Array.isArray(features)
+      ? features.some(feature => String(feature).trim())
+      : Boolean(String(features || '').trim());
+  } catch {
+    hasKeyFeature = Boolean(product.key_features_json?.trim());
+  }
+  if (!hasKeyFeature) missing.push('Key features');
+  if (Number(product.specification_count || 0) < 1) missing.push('Specifications');
+  if (!product.meta_title?.trim()) missing.push('SEO title');
+  if (!product.meta_desc?.trim()) missing.push('SEO description');
+  if (!product.focus_keyword?.trim()) missing.push('SEO focus keyword');
+  return missing;
+}
 
 export default function ProductsManager({ initialProducts }: Props) {
   const [products, setProducts] = useState<ProductItem[]>(initialProducts);
@@ -94,6 +123,7 @@ export default function ProductsManager({ initialProducts }: Props) {
   const trendingCount = useMemo(() => products.filter(p => Boolean(p.is_featured)).length, [products]);
   const hotDealsCount = useMemo(() => products.filter(p => Boolean(p.is_hot)).length, [products]);
   const pcBuilderCount = useMemo(() => products.filter(p => Boolean(p.is_pc_builder)).length, [products]);
+  const missingDetailsCount = useMemo(() => products.filter(p => getMissingDetails(p).length > 0).length, [products]);
 
   // Copy SKU helper
   const handleCopySku = (sku: string) => {
@@ -205,6 +235,7 @@ export default function ProductsManager({ initialProducts }: Props) {
       if (highlightFilter === 'trending' && !p.is_featured) return false;
       if (highlightFilter === 'hot_deals' && !p.is_hot) return false;
       if (highlightFilter === 'pc_builder' && !p.is_pc_builder) return false;
+      if (highlightFilter === 'missing_details' && getMissingDetails(p).length === 0) return false;
 
       // Category filter
       if (categoryFilter !== 'all' && p.category_name !== categoryFilter) {
@@ -330,7 +361,7 @@ export default function ProductsManager({ initialProducts }: Props) {
       </div>
 
       {/* Quick Showcase Promotion Pills (Trending & Hot Deals Highlights) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         <button
           type="button"
           onClick={() => setHighlightFilter('all')}
@@ -423,6 +454,32 @@ export default function ProductsManager({ initialProducts }: Props) {
           </div>
           <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
             Interactive PC configurator selection pool
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setHighlightFilter(highlightFilter === 'missing_details' ? 'all' : 'missing_details')}
+          className={`p-3.5 rounded-2xl border text-left transition-all ${
+            highlightFilter === 'missing_details'
+              ? 'bg-orange-500 text-white border-orange-600 shadow-md ring-2 ring-orange-400'
+              : 'bg-white dark:bg-navy-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-orange-400/50'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-400 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              Missing Details
+            </span>
+            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300">
+              Needs review
+            </span>
+          </div>
+          <div className={`text-xl font-black mt-1 ${highlightFilter === 'missing_details' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+            {missingDetailsCount} <span className="text-xs font-medium opacity-80">Products</span>
+          </div>
+          <div className={`text-[10px] mt-0.5 ${highlightFilter === 'missing_details' ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
+            Images, descriptions, specs, and SEO
           </div>
         </button>
       </div>
@@ -614,6 +671,7 @@ export default function ProductsManager({ initialProducts }: Props) {
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider bg-slate-50/50 dark:bg-navy-950/40">
                   <th className="py-3 px-3">Product Name &amp; SKU</th>
+                  {highlightFilter === 'missing_details' && <th className="py-3 px-3">Missing Details</th>}
                   <th className="py-3 px-3 text-center">Status / Availability</th>
                   <th className="py-3 px-3">Homepage Showcase &amp; Promos</th>
                   <th className="py-3 px-3">Category</th>
@@ -636,6 +694,7 @@ export default function ProductsManager({ initialProducts }: Props) {
                   const isHot = Boolean(p.is_hot);
                   const isTrendingUpdating = updatingFlag?.id === p.id && updatingFlag.field === 'is_featured';
                   const isHotUpdating = updatingFlag?.id === p.id && updatingFlag.field === 'is_hot';
+                  const missingDetails = getMissingDetails(p);
 
                   return (
                     <tr key={`admin-prod-${p.id}-${idx}`} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
@@ -673,6 +732,25 @@ export default function ProductsManager({ initialProducts }: Props) {
                           </div>
                         </div>
                       </td>
+
+                      {highlightFilter === 'missing_details' && (
+                        <td className="py-3 px-3 min-w-56">
+                          <div className="flex flex-wrap gap-1">
+                            {missingDetails.map(detail => (
+                              <span key={detail} className="px-2 py-1 rounded-md bg-orange-50 text-orange-800 border border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-900 text-[10px] font-semibold">
+                                {detail}
+                              </span>
+                            ))}
+                          </div>
+                          <Link
+                            href={`/admin/products/${p.id}/edit`}
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-2.5 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-brand-700 dark:bg-brand-500 dark:text-navy-950 dark:hover:bg-brand-400"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                            Complete details
+                          </Link>
+                        </td>
+                      )}
 
                       {/* Stock Status / Product Availability (Interactive Real-Time Quick Selector) */}
                       <td className="py-3 px-3 text-center">
