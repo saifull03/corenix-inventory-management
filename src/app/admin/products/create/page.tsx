@@ -281,6 +281,8 @@ export default function CreateProductPage() {
           slug: formData.slug,
           sku: formData.sku,
           model: formData.model,
+          barcode: formData.barcode,
+          mpn: formData.mpn,
           brand_id: formData.brand_id,
           category_id: formData.category_id,
           warranty_period: formData.warranty_period,
@@ -295,6 +297,7 @@ export default function CreateProductPage() {
           is_pc_builder: formData.is_pc_builder,
           pc_builder_component: formData.pc_builder_component,
           primary_image: formData.primary_image,
+          images: additionalImages,
           overview: formData.overview,
           key_features: [formData.feature1, formData.feature2, formData.feature3],
           specs: finalSpecs,
@@ -302,6 +305,7 @@ export default function CreateProductPage() {
             { branch_id: 1, quantity: Number(formData.wh_stock) }, // WH
             { branch_id: 2, quantity: Number(formData.shop1_stock) }, // Shop 1
             { branch_id: 3, quantity: Number(formData.shop2_stock) }, // Shop 2
+            { branch_id: 4, quantity: Number(formData.rma_stock) }, // RMA Hub
           ],
           meta_title: formData.meta_title,
           meta_desc: formData.meta_desc,
@@ -324,14 +328,14 @@ export default function CreateProductPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="product-manager space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-brand-400">
             Enterprise Product Workflow
           </span>
-          <h1 className="text-2xl font-black text-white">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             18-Step Product Manager
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -366,7 +370,7 @@ export default function CreateProductPage() {
             className={`px-3 py-2 rounded-xl whitespace-nowrap font-bold transition-colors ${
               activeTab === tab.id
                 ? 'bg-brand-500 text-navy-950 shadow'
-                : 'bg-navy-900 text-slate-400 hover:bg-slate-800 hover:text-white'
+                : 'bg-navy-900 text-slate-400 hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {tab.name}
@@ -379,7 +383,7 @@ export default function CreateProductPage() {
         {/* TAB 1: BASIC INFORMATION */}
         {activeTab === 1 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               1. Basic Product Information
             </h3>
 
@@ -436,6 +440,17 @@ export default function CreateProductPage() {
                   onChange={(e) => handleChange('model', e.target.value)}
                   placeholder="e.g. RTX 5070 GAMING TRIO"
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Manufacturer Part Number (MPN)</label>
+                <input
+                  type="text"
+                  value={formData.mpn}
+                  onChange={(e) => handleChange('mpn', e.target.value)}
+                  placeholder="e.g. 90MB1F00-M0EAY0"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-500"
                 />
               </div>
 
@@ -539,7 +554,7 @@ export default function CreateProductPage() {
                   </button>
                 )}
                 <div className="flex-1">
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
                     2. Hardware Category
                     {selectedParent && (
                       <span className="text-slate-400 font-normal text-sm ml-2">
@@ -700,7 +715,7 @@ export default function CreateProductPage() {
         {/* TAB 3: BRAND */}
         {activeTab === 3 && (
           <div className="space-y-5 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               3. Brand Partner Selection
             </h3>
 
@@ -753,7 +768,7 @@ export default function CreateProductPage() {
         {/* TAB 4: PRICING & COST MARGIN */}
         {activeTab === 4 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               4. Product Pricing & Profit Accounting (Requirement 13)
             </h3>
 
@@ -810,7 +825,7 @@ export default function CreateProductPage() {
         {/* TAB 5: MULTI-LOCATION INVENTORY */}
         {activeTab === 5 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               5. Multi-Branch Location Stock (Requirement 14)
             </h3>
 
@@ -866,7 +881,7 @@ export default function CreateProductPage() {
         {/* TAB 6: IMAGES */}
         {activeTab === 6 && (
           <div className="space-y-6 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3 flex items-center gap-2">
               <Image className="w-4 h-4 text-sky-400" />
               6. Product Images &amp; Visual Assets
             </h3>
@@ -1107,7 +1122,7 @@ export default function CreateProductPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <Sliders className="w-4 h-4 text-brand-400" />
-                    <h3 className="text-base font-bold text-white">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
                       7. Technical Specifications &mdash; <span className="text-brand-400">{catName}</span>
                     </h3>
                   </div>
@@ -1206,7 +1221,7 @@ export default function CreateProductPage() {
                         <div className="px-5 py-3.5 bg-slate-800/50 border-b border-slate-800 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-brand-400"></div>
-                            <h4 className="font-bold text-white text-xs uppercase tracking-wider">
+                            <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                               {section.title}
                             </h4>
                           </div>
@@ -1259,7 +1274,7 @@ export default function CreateProductPage() {
               <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <h4 className="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                    <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
                       <Plus className="w-3.5 h-3.5 text-brand-400" />
                       <span>Custom Specification Attributes</span>
                     </h4>
@@ -1360,7 +1375,7 @@ export default function CreateProductPage() {
         {/* TAB 8: FEATURES */}
         {activeTab === 8 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               8. Key Feature Highlights (Bullet Points)
             </h3>
 
@@ -1404,7 +1419,7 @@ export default function CreateProductPage() {
         {/* TAB 9: DESCRIPTION */}
         {activeTab === 9 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               9. Structured Dynamic Product Overview (Requirement 9)
             </h3>
 
@@ -1424,7 +1439,7 @@ export default function CreateProductPage() {
         {/* TAB 10: SEO & GOOGLE PREVIEW */}
         {activeTab === 10 && (
           <div className="space-y-5 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               10. Product SEO & Google Search Snippet Preview (Requirement 15)
             </h3>
 
@@ -1484,7 +1499,7 @@ export default function CreateProductPage() {
         {/* TAB 11: PC BUILDER */}
         {activeTab === 11 && (
           <div className="space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-800 pb-3">
               11. PC Builder Engine Integration (Requirement 23)
             </h3>
 
@@ -1496,7 +1511,7 @@ export default function CreateProductPage() {
                   onChange={(e) => handleChange('is_pc_builder', e.target.checked)}
                   className="rounded text-brand-500"
                 />
-                <span className="font-bold text-white">Enable this product in PC Builder</span>
+                <span className="font-bold text-slate-900 dark:text-white">Enable this product in PC Builder</span>
               </label>
 
               {formData.is_pc_builder && (
@@ -1529,7 +1544,7 @@ export default function CreateProductPage() {
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">
-              <h2 className="text-xl font-bold text-white">Ready to Publish Hardware?</h2>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Ready to Publish Hardware?</h2>
               <p className="text-xs text-slate-400">
                 The product will immediately be indexed in search, published to the category & brand pages, and added to the sitemap.
               </p>

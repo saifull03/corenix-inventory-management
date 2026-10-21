@@ -25,7 +25,7 @@ export default function AdminErpPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-brand-400">
             Enterprise Connectors
           </span>
-          <h1 className="text-2xl font-black text-white">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             ERP & External System Synchronization
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -66,7 +66,7 @@ export default function AdminErpPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Inbound Pipeline</span>
             <ArrowRightLeft className="w-4 h-4 text-brand-400" />
           </div>
-          <span className="text-xl font-black text-white block">ERP ➔ CORENIX</span>
+          <span className="text-xl font-black text-slate-900 dark:text-white block">ERP ➔ CORENIX</span>
           <span className="text-xs text-slate-400">Supplier costs, new barcodes & stock</span>
         </div>
 
@@ -75,19 +75,19 @@ export default function AdminErpPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Outbound Pipeline</span>
             <Database className="w-4 h-4 text-purple-400" />
           </div>
-          <span className="text-xl font-black text-white block">CORENIX ➔ ERP</span>
+          <span className="text-xl font-black text-slate-900 dark:text-white block">CORENIX ➔ ERP</span>
           <span className="text-xs text-slate-400">Confirmed orders, customer ledger & VAT</span>
         </div>
       </div>
 
       {/* Recent Sync Logs */}
       <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
-        <h3 className="text-sm font-bold text-white">Automated ERP Sync Log Trail</h3>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Automated ERP Sync Log Trail</h3>
 
         <div className="overflow-x-auto text-xs">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+              <tr className="border-b border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400 font-bold uppercase tracking-wider">
                 <th className="py-3 px-4">Timestamp</th>
                 <th className="py-3 px-4">Direction</th>
                 <th className="py-3 px-4">Module</th>
@@ -98,9 +98,9 @@ export default function AdminErpPage() {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               <tr className="hover:bg-slate-800/40">
-                <td className="py-3 px-4 font-mono text-slate-300">2026-09-30 11:30:12</td>
+                <td className="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">2026-09-30 11:30:12</td>
                 <td className="py-3 px-4 font-semibold text-brand-400">Inbound (ERP ➔ Web)</td>
-                <td className="py-3 px-4 text-white">Prices & Stock</td>
+                <td className="py-3 px-4 text-slate-900 dark:text-white">Prices & Stock</td>
                 <td className="py-3 px-4 text-center font-bold">12 Items</td>
                 <td className="py-3 px-4 text-center">
                   <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold text-[10px]">
@@ -110,9 +110,9 @@ export default function AdminErpPage() {
                 <td className="py-3 px-4 text-slate-400">Updated RTX 5060 price to ৳46,900</td>
               </tr>
               <tr className="hover:bg-slate-800/40">
-                <td className="py-3 px-4 font-mono text-slate-300">2026-09-30 10:15:00</td>
+                <td className="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">2026-09-30 10:15:00</td>
                 <td className="py-3 px-4 font-semibold text-purple-400">Outbound (Web ➔ ERP)</td>
-                <td className="py-3 px-4 text-white">Orders & Invoices</td>
+                <td className="py-3 px-4 text-slate-900 dark:text-white">Orders & Invoices</td>
                 <td className="py-3 px-4 text-center font-bold">1 Order</td>
                 <td className="py-3 px-4 text-center">
                   <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold text-[10px]">

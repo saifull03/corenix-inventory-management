@@ -29,7 +29,7 @@ export default async function AdminRmaPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-brand-400">
             Warranty & Service Engineering
           </span>
-          <h1 className="text-2xl font-black text-white">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             RMA & Service Hub Management
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -49,7 +49,7 @@ export default async function AdminRmaPage() {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-navy-900 border border-slate-800">
           <span className="text-xs text-slate-400 font-semibold block">Total RMA Cases</span>
-          <span className="text-2xl font-black text-white">{rmaCases.length} Cases</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white">{rmaCases.length} Cases</span>
           <span className="text-xs text-slate-400 mt-1 block">Lifetime volume</span>
         </div>
 
@@ -74,12 +74,12 @@ export default async function AdminRmaPage() {
 
       {/* RMA Table */}
       <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
-        <h3 className="text-sm font-bold text-white">Live Service Tickets</h3>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Live Service Tickets</h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+              <tr className="border-b border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400 font-bold uppercase tracking-wider">
                 <th className="py-3 px-4">RMA # & Date</th>
                 <th className="py-3 px-4">Customer</th>
                 <th className="py-3 px-4">Component & Serial</th>
@@ -97,18 +97,18 @@ export default async function AdminRmaPage() {
                   </td>
 
                   <td className="py-3 px-4">
-                    <span className="text-white font-bold block">{r.customer_name}</span>
+                    <span className="text-slate-900 dark:text-white font-bold block">{r.customer_name}</span>
                     <span className="text-[10px] text-slate-400">{r.customer_phone}</span>
                   </td>
 
                   <td className="py-3 px-4 max-w-xs">
-                    <span className="text-white font-medium block truncate" title={r.product_name}>
+                    <span className="text-slate-900 dark:text-white font-medium block truncate" title={r.product_name}>
                       {r.product_name}
                     </span>
                     <span className="text-[10px] text-slate-400 font-mono">SN: {r.serial_number}</span>
                   </td>
 
-                  <td className="py-3 px-4 text-slate-300">
+                  <td className="py-3 px-4 text-slate-700 dark:text-slate-300">
                     {r.technician_name || 'Unassigned'}
                   </td>
 

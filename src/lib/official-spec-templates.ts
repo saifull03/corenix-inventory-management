@@ -945,6 +945,48 @@ export const LAPTOP_SPEC_TEMPLATE: SpecTemplate = {
 // ─────────────────────────────────────────────────────────────────────────────
 // REGISTRY MAPPING & RESOLVER
 // ─────────────────────────────────────────────────────────────────────────────
+export const DESKTOP_PC_SPEC_TEMPLATE: SpecTemplate = {
+  categoryName: 'Desktop / Brand PC',
+  sections: [
+    {
+      title: 'Processor',
+      fields: [
+        { key: 'cpu_model', label: 'Processor Model', section: 'Processor', placeholder: 'e.g. Intel Core Ultra 7 265K / AMD Ryzen 7 9800X3D', required: true },
+        { key: 'cpu_cores_threads', label: 'Cores / Threads', section: 'Processor', placeholder: 'e.g. 8 Cores / 16 Threads' },
+        { key: 'cpu_clock', label: 'Processor Clock Speed', section: 'Processor', placeholder: 'e.g. Up to 5.5 GHz' },
+        { key: 'cpu_cooler', label: 'CPU Cooling', section: 'Processor', placeholder: 'e.g. 240 mm liquid cooler / tower air cooler' },
+      ],
+    },
+    {
+      title: 'Memory & Storage',
+      fields: [
+        { key: 'memory_capacity', label: 'Memory Capacity', section: 'Memory & Storage', placeholder: 'e.g. 32 GB (2 x 16 GB)', required: true },
+        { key: 'memory_type', label: 'Memory Type / Speed', section: 'Memory & Storage', placeholder: 'e.g. DDR5 6000 MT/s' },
+        { key: 'primary_storage', label: 'Primary Storage', section: 'Memory & Storage', placeholder: 'e.g. 1 TB PCIe 4.0 NVMe SSD', required: true },
+        { key: 'secondary_storage', label: 'Additional Storage', section: 'Memory & Storage', placeholder: 'e.g. 2 TB HDD / None' },
+      ],
+    },
+    {
+      title: 'Graphics & Mainboard',
+      fields: [
+        { key: 'graphics_model', label: 'Graphics Card', section: 'Graphics & Mainboard', placeholder: 'e.g. NVIDIA GeForce RTX 5070 12 GB', required: true },
+        { key: 'graphics_memory', label: 'Graphics Memory', section: 'Graphics & Mainboard', placeholder: 'e.g. 12 GB GDDR7' },
+        { key: 'motherboard_model', label: 'Motherboard Model / Chipset', section: 'Graphics & Mainboard', placeholder: 'e.g. ASUS B850M / AMD B850' },
+      ],
+    },
+    {
+      title: 'System & Connectivity',
+      fields: [
+        { key: 'power_supply', label: 'Power Supply', section: 'System & Connectivity', placeholder: 'e.g. 750 W 80 PLUS Gold' },
+        { key: 'case_model', label: 'Case / Chassis', section: 'System & Connectivity', placeholder: 'e.g. ATX Mid Tower with tempered glass' },
+        { key: 'operating_system', label: 'Operating System', section: 'System & Connectivity', placeholder: 'e.g. Windows 11 Home / No OS' },
+        { key: 'wireless_connectivity', label: 'Wireless Connectivity', section: 'System & Connectivity', placeholder: 'e.g. Wi-Fi 6E, Bluetooth 5.3' },
+        { key: 'included_accessories', label: 'Included Accessories', section: 'System & Connectivity', placeholder: 'e.g. Power cable, keyboard and mouse' },
+      ],
+    },
+  ],
+};
+
 export const ALL_SPEC_TEMPLATES: Record<string, SpecTemplate> = {
   motherboard: MOTHERBOARD_SPEC_TEMPLATE,
   processor: PROCESSOR_SPEC_TEMPLATE,
@@ -968,6 +1010,11 @@ export const ALL_SPEC_TEMPLATES: Record<string, SpecTemplate> = {
   laptop: LAPTOP_SPEC_TEMPLATE,
   'gaming-laptop': LAPTOP_SPEC_TEMPLATE,
   laptops: LAPTOP_SPEC_TEMPLATE,
+  'brand-pc': DESKTOP_PC_SPEC_TEMPLATE,
+  'desktop-pc': DESKTOP_PC_SPEC_TEMPLATE,
+  'gaming-pc': DESKTOP_PC_SPEC_TEMPLATE,
+  'gaming-desktop': DESKTOP_PC_SPEC_TEMPLATE,
+  desktop: DESKTOP_PC_SPEC_TEMPLATE,
 };
 
 // Numeric ID fallback mapping (from existing seed database IDs)
@@ -992,13 +1039,8 @@ export function getCategorySpecTemplate(
   categorySlug?: string | null,
   categoryName?: string | null
 ): SpecTemplate | null {
-  // 1. Direct ID lookup
-  if (categoryId && DB_CATEGORY_ID_TO_TEMPLATE_KEY[categoryId]) {
-    const key = DB_CATEGORY_ID_TO_TEMPLATE_KEY[categoryId];
-    if (ALL_SPEC_TEMPLATES[key]) return ALL_SPEC_TEMPLATES[key];
-  }
-
-  // 2. Slug direct match or substring
+  // Prefer the category's current slug/name over legacy seed IDs so newly
+  // created categories always select the correct template.
   if (categorySlug) {
     const cleanSlug = categorySlug.toLowerCase().trim();
     if (ALL_SPEC_TEMPLATES[cleanSlug]) return ALL_SPEC_TEMPLATES[cleanSlug];
@@ -1013,9 +1055,9 @@ export function getCategorySpecTemplate(
     if (cleanSlug.includes('cooler') || cleanSlug.includes('cooling') || cleanSlug.includes('aio') || cleanSlug.includes('heatsink')) return COOLER_SPEC_TEMPLATE;
     if (cleanSlug.includes('monitor') || cleanSlug.includes('display')) return MONITOR_SPEC_TEMPLATE;
     if (cleanSlug.includes('laptop') || cleanSlug.includes('notebook')) return LAPTOP_SPEC_TEMPLATE;
+    if (cleanSlug.includes('brand-pc') || cleanSlug.includes('desktop-pc') || cleanSlug.includes('gaming-pc') || cleanSlug.includes('desktop')) return DESKTOP_PC_SPEC_TEMPLATE;
   }
 
-  // 3. Name substring matching
   if (categoryName) {
     const cleanName = categoryName.toLowerCase().trim();
     if (cleanName.includes('motherboard')) return MOTHERBOARD_SPEC_TEMPLATE;
@@ -1028,6 +1070,13 @@ export function getCategorySpecTemplate(
     if (cleanName.includes('cooler') || cleanName.includes('cooling')) return COOLER_SPEC_TEMPLATE;
     if (cleanName.includes('monitor') || cleanName.includes('display')) return MONITOR_SPEC_TEMPLATE;
     if (cleanName.includes('laptop') || cleanName.includes('notebook')) return LAPTOP_SPEC_TEMPLATE;
+    if (cleanName.includes('brand pc') || cleanName.includes('desktop pc') || cleanName.includes('gaming pc') || cleanName === 'desktop') return DESKTOP_PC_SPEC_TEMPLATE;
+  }
+
+  // Numeric IDs are a fallback for older records without a useful slug/name.
+  if (categoryId && DB_CATEGORY_ID_TO_TEMPLATE_KEY[categoryId]) {
+    const key = DB_CATEGORY_ID_TO_TEMPLATE_KEY[categoryId];
+    if (ALL_SPEC_TEMPLATES[key]) return ALL_SPEC_TEMPLATES[key];
   }
 
   return null;

@@ -67,6 +67,8 @@ export async function POST(req: NextRequest) {
       slug,
       sku,
       model,
+      barcode,
+      mpn,
       brand_id,
       category_id,
       warranty_period,
@@ -81,6 +83,7 @@ export async function POST(req: NextRequest) {
       is_pc_builder = false,
       pc_builder_component = null,
       primary_image,
+      images = [],
       overview,
       key_features = [],
       specs = [], // Array of { attribute_id, attribute_value }
@@ -156,16 +159,18 @@ export async function POST(req: NextRequest) {
     // 1. Insert product
     const pRes = await query<any>(
       `INSERT INTO products (
-        name, slug, sku, model, brand_id, category_id, warranty_period, status, stock_status,
+        name, slug, sku, model, barcode, mpn, brand_id, category_id, warranty_period, status, stock_status,
         purchase_cost, avg_cost, selling_price, discount_price, min_selling_price,
         discount_amount, discount_percent, is_featured, is_hot, is_new, is_pc_builder,
         pc_builder_component, seo_score
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 92)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 92)`,
       [
         name,
         finalSlug,
         finalSku,
         model || null,
+        barcode || null,
+        mpn || null,
         brand_id,
         category_id,
         warranty_period || '1 Year Official Warranty',
@@ -188,11 +193,14 @@ export async function POST(req: NextRequest) {
 
     const productId = (pRes as any).insertId;
 
-    // 2. Primary Image
-    if (primary_image) {
+    // 2. Primary and gallery images
+    const productImages = [...new Set([primary_image, ...(Array.isArray(images) ? images : [])]
+      .map((image: any) => typeof image === 'string' ? image : image?.image_url)
+      .filter((url: any) => typeof url === 'string' && url.trim()))];
+    for (const [index, imageUrl] of productImages.entries()) {
       await query(
-        `INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES (?, ?, ?, 1)`,
-        [productId, primary_image, name]
+        `INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES (?, ?, ?, ?)`,
+        [productId, imageUrl, name, index === 0 ? 1 : 0]
       );
     }
 
@@ -261,7 +269,12 @@ export async function POST(req: NextRequest) {
     // 6. Location-Based Multi-Branch Inventory
     const branches = await query<any[]>(`SELECT id FROM branches`);
     for (const b of branches) {
-      const branchStock = inventory.find((inv: any) => inv.branch_id === b.id)?.quantity || 5;
+      const branchInventory = Array.isArray(inventory)
+        ? inventory.find((inv: any) => Number(inv.branch_id) === Number(b.id))
+        : undefined;
+      const branchStock = branchInventory
+        ? Math.max(0, parseInt(branchInventory.quantity, 10) || 0)
+        : 5;
       await query(
         `INSERT INTO inventory (product_id, branch_id, quantity, reserved_qty, min_stock_level, shelf_location)
          VALUES (?, ?, ?, 0, 2, ?)`,

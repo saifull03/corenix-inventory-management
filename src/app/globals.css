@@ -1822,6 +1822,90 @@ html:not(.dark) .text-slate-400 {
   color: var(--text-subtle) !important;
 }
 
+/* Product manager uses legacy dark utilities; keep its light theme readable. */
+html:not(.dark) .product-manager .text-slate-300,
+html:not(.dark) .product-manager .text-slate-400,
+html:not(.dark) .product-manager .text-slate-200,
+html:not(.dark) .product-manager .text-slate-100 {
+  color: var(--text-muted) !important;
+}
+
+html:not(.dark) .product-manager .text-brand-300,
+html:not(.dark) .product-manager .text-brand-400,
+html:not(.dark) .product-manager .text-brand-400\/80,
+html:not(.dark) .product-manager .text-cyan-300,
+html:not(.dark) .product-manager .text-cyan-400 {
+  color: var(--primary) !important;
+}
+
+html:not(.dark) .product-manager .text-brand-200 {
+  color: var(--primary-active) !important;
+}
+
+html:not(.dark) .product-manager .text-emerald-300 {
+  color: var(--success-fg) !important;
+}
+
+html:not(.dark) .product-manager .text-emerald-400,
+html:not(.dark) .product-manager .text-emerald-500 {
+  color: var(--success-fg) !important;
+}
+
+html:not(.dark) .product-manager .border-slate-800,
+html:not(.dark) .product-manager .border-slate-700,
+html:not(.dark) .product-manager .border-slate-600,
+html:not(.dark) .product-manager .border-emerald-800 {
+  border-color: var(--border) !important;
+}
+
+html:not(.dark) .product-manager .bg-slate-800,
+html:not(.dark) .product-manager .bg-slate-800\/60,
+html:not(.dark) .product-manager .bg-slate-800\/50,
+html:not(.dark) .product-manager .bg-slate-800\/40,
+html:not(.dark) .product-manager .bg-slate-800\/30,
+html:not(.dark) .product-manager .bg-slate-800\/80,
+html:not(.dark) .product-manager .bg-slate-900,
+html:not(.dark) .product-manager .bg-slate-900\/50,
+html:not(.dark) .product-manager .bg-slate-900\/60,
+html:not(.dark) .product-manager .bg-slate-950\/40,
+html:not(.dark) .product-manager .bg-slate-950\/60,
+html:not(.dark) .product-manager .bg-slate-950\/70,
+html:not(.dark) .product-manager .bg-slate-700,
+html:not(.dark) .product-manager .bg-slate-600,
+html:not(.dark) .product-manager .bg-cyan-950 {
+  background-color: var(--surface-2) !important;
+}
+
+html:not(.dark) .product-manager .bg-emerald-950\/80 {
+  background-color: var(--success-bg) !important;
+}
+
+html:not(.dark) .product-manager .hover\:bg-slate-700:hover,
+html:not(.dark) .product-manager .hover\:bg-slate-600:hover,
+html:not(.dark) .product-manager .hover\:bg-slate-800:hover,
+html:not(.dark) .product-manager .hover\:bg-slate-800\/30:hover {
+  background-color: var(--surface-2) !important;
+}
+
+html:not(.dark) .product-manager input:not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) .product-manager select,
+html:not(.dark) .product-manager textarea {
+  color: var(--text) !important;
+  background-color: var(--surface) !important;
+  border-color: var(--border-strong) !important;
+}
+
+html:not(.dark) .product-manager option {
+  color: var(--text);
+  background-color: var(--surface);
+}
+
+html:not(.dark) .product-manager input::placeholder,
+html:not(.dark) .product-manager textarea::placeholder {
+  color: var(--text-subtle);
+  opacity: 1;
+}
+
 /* Dark mode custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;

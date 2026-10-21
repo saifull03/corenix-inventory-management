@@ -26,7 +26,7 @@ export default async function AdminSeoPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-brand-400">
             Search Engine Domination
           </span>
-          <h1 className="text-2xl font-black text-white">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             SEO Management & Landing Page Builder
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -57,7 +57,7 @@ export default async function AdminSeoPage() {
       {/* SEO Landing Pages List (Requirement 21) */}
       <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-brand-400" />
             <span>High-Value SEO Commercial Landing Pages</span>
           </h2>
@@ -67,7 +67,7 @@ export default async function AdminSeoPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+              <tr className="border-b border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400 font-bold uppercase tracking-wider">
                 <th className="py-3 px-4">Landing Page Slug</th>
                 <th className="py-3 px-4">H1 Heading</th>
                 <th className="py-3 px-4">Target Focus Keyword</th>
@@ -79,14 +79,14 @@ export default async function AdminSeoPage() {
             <tbody className="divide-y divide-slate-800/60">
               {seoLandingPages.map((sp) => (
                 <tr key={sp.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-cyan-400">
+                  <td className="py-3 px-4 font-mono font-bold text-sky-700 dark:text-cyan-400">
                     /{sp.slug}
                   </td>
-                  <td className="py-3 px-4 font-medium text-white max-w-xs truncate" title={sp.h1}>
+                  <td className="py-3 px-4 font-medium text-slate-900 dark:text-white max-w-xs truncate" title={sp.h1}>
                     {sp.h1}
                   </td>
-                  <td className="py-3 px-4 text-slate-300">
-                    <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px]">
+                  <td className="py-3 px-4 text-slate-700 dark:text-slate-300">
+                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-mono text-[11px]">
                       {sp.focus_keyword || sp.slug}
                     </span>
                   </td>
@@ -119,7 +119,7 @@ export default async function AdminSeoPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Searches */}
         <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-brand-400" />
             <span>Top Organic Search Queries</span>
           </h3>
@@ -130,7 +130,7 @@ export default async function AdminSeoPage() {
                 key={sa.id}
                 className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between"
               >
-                <span className="font-mono text-white font-medium">&ldquo;{sa.query}&rdquo;</span>
+                <span className="font-mono text-slate-900 dark:text-white font-medium">&ldquo;{sa.query}&rdquo;</span>
                 <span className="text-slate-400 font-semibold">{sa.hits_count} searches</span>
               </div>
             ))}
@@ -139,7 +139,7 @@ export default async function AdminSeoPage() {
 
         {/* Zero Results Searches */}
         <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-400" />
             <span>Zero-Result Searches (Procurement Insights)</span>
           </h3>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -27,7 +27,9 @@ import {
   AlertCircle,
   Check,
   Eye,
+  Upload,
 } from 'lucide-react';
+import { ALL_SPEC_TEMPLATES, getCategorySpecTemplate } from '@/lib/official-spec-templates';
 
 interface CategoryItem {
   id: number;
@@ -47,6 +49,9 @@ interface SpecItem {
   attribute_value: string;
 }
 
+const normalizeSpecKey = (value: unknown) =>
+  String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
 interface InventoryItem {
   branch_id: number;
   branch_name: string;
@@ -62,7 +67,12 @@ export default function EditProductPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [imagePreviewFailed, setImagePreviewFailed] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const imageFileRef = useRef<HTMLInputElement>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
 
   // Reference lists
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -105,6 +115,9 @@ export default function EditProductPage() {
 
   const [inventoryList, setInventoryList] = useState<InventoryItem[]>([]);
   const [specsList, setSpecsList] = useState<SpecItem[]>([]);
+  const [templateSpecValues, setTemplateSpecValues] = useState<Record<string, string>>({});
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryUrl, setGalleryUrl] = useState('');
 
   // Show toast notification
   const showToast = (type: 'success' | 'error', text: string) => {
@@ -170,7 +183,7 @@ export default function EditProductPage() {
           purchase_cost: Number(p.purchase_cost) || 0,
           selling_price: Number(p.selling_price) || 0,
           discount_price: p.discount_price ? Number(p.discount_price) : 0,
-          primary_image: p.images?.[0]?.image_url || '',
+          primary_image: p.images?.find((image: any) => image.is_primary)?.image_url || p.images?.[0]?.image_url || '',
           overview: p.description?.overview || '',
           key_features: parsedFeatures,
           what_in_box: p.description?.what_in_box || 'Product, User Manual, Power Cable/Accessories',
@@ -179,6 +192,11 @@ export default function EditProductPage() {
           meta_desc: p.seo?.meta_desc || `Buy authentic ${p.name} in Bangladesh with warranty at CORENIX.`,
           focus_keyword: p.seo?.focus_keyword || (p.name || '').toLowerCase(),
         });
+        const initialPrimaryImage = p.images?.find((image: any) => image.is_primary)?.image_url || p.images?.[0]?.image_url || '';
+        setGalleryImages((p.images || [])
+          .filter((image: any) => !image.is_primary && image.image_url !== initialPrimaryImage)
+          .map((image: any) => image.image_url));
+        setImagePreviewFailed(false);
 
         // Set Inventory
         if (p.inventory && p.inventory.length > 0) {
@@ -200,23 +218,33 @@ export default function EditProductPage() {
           ]);
         }
 
-        // Set Specs
-        if (p.specs && p.specs.length > 0) {
-          setSpecsList(
-            p.specs.map((s: any) => ({
-              attribute_id: s.attribute_id,
-              custom_label: s.custom_label || s.attr_name || 'Spec',
-              attribute_value: s.attribute_value || '',
-            }))
-          );
-        } else {
-          setSpecsList([
-            { custom_label: 'Processor / Core', attribute_value: '' },
-            { custom_label: 'Memory / RAM', attribute_value: '' },
-            { custom_label: 'Storage Capacity', attribute_value: '' },
-            { custom_label: 'Graphics / GPU', attribute_value: '' },
-          ]);
-        }
+        // Put saved values into the selected category template; keep unmatched fields editable below.
+        const savedSpecs = p.specs || [];
+        const specTemplate = getCategorySpecTemplate(p.category_id, p.category_slug, p.category_name);
+        const templateFields = specTemplate?.sections.flatMap(section => section.fields) || [];
+        const matchedSpecIndexes = new Set<number>();
+        const initialTemplateValues: Record<string, string> = {};
+        templateFields.forEach(field => {
+          const fieldKeys = new Set([normalizeSpecKey(field.key), normalizeSpecKey(field.label)]);
+          const matchIndex = savedSpecs.findIndex((spec: any, index: number) => {
+            if (matchedSpecIndexes.has(index)) return false;
+            return fieldKeys.has(normalizeSpecKey(spec.custom_label || spec.attr_name)) ||
+              fieldKeys.has(normalizeSpecKey(spec.attr_code));
+          });
+          if (matchIndex >= 0) {
+            matchedSpecIndexes.add(matchIndex);
+            initialTemplateValues[field.key] = savedSpecs[matchIndex].attribute_value || '';
+          }
+        });
+        setTemplateSpecValues(initialTemplateValues);
+        const additionalSpecs = savedSpecs
+          .filter((_: any, index: number) => !matchedSpecIndexes.has(index))
+          .map((spec: any) => ({
+            attribute_id: spec.attribute_id,
+            custom_label: spec.custom_label || spec.attr_name || 'Spec',
+            attribute_value: spec.attribute_value || '',
+          }));
+        setSpecsList(additionalSpecs);
       } catch (err: any) {
         showToast('error', err.message || 'Failed to load product details');
       } finally {
@@ -236,6 +264,90 @@ export default function EditProductPage() {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleImageUpload = async (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('error', 'Choose a valid image file.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      showToast('error', 'Image must be 8 MB or smaller.');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+      uploadData.append('folder', 'products');
+      const response = await fetch('/api/admin/upload', { method: 'POST', body: uploadData });
+      const result = await response.json();
+      if (!response.ok || !result.success || !result.url) {
+        throw new Error(result.error || 'Image upload failed.');
+      }
+      setImagePreviewFailed(false);
+      setFormData(prev => ({ ...prev, primary_image: result.url }));
+      showToast('success', 'Image uploaded. Save the product to apply it.');
+    } catch (error: any) {
+      showToast('error', error.message || 'Image upload failed.');
+    } finally {
+      setIsUploadingImage(false);
+      if (imageFileRef.current) imageFileRef.current.value = '';
+    }
+  };
+
+  const uploadProductImage = async (file: File) => {
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    uploadData.append('folder', 'products');
+    const response = await fetch('/api/admin/upload', { method: 'POST', body: uploadData });
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.url) {
+      throw new Error(result.error || `Could not upload ${file.name}.`);
+    }
+    return result.url as string;
+  };
+
+  const handleGalleryUpload = async (files: FileList | null) => {
+    const selectedFiles = Array.from(files || []);
+    if (!selectedFiles.length) return;
+    const invalidFile = selectedFiles.find(file => !file.type.startsWith('image/') || file.size > 8 * 1024 * 1024);
+    if (invalidFile) {
+      showToast('error', `${invalidFile.name} is not a supported image under 8 MB.`);
+      if (galleryFileRef.current) galleryFileRef.current.value = '';
+      return;
+    }
+
+    setIsUploadingGallery(true);
+    try {
+      const uploadedUrls: string[] = [];
+      for (const file of selectedFiles) uploadedUrls.push(await uploadProductImage(file));
+      setGalleryImages(prev => [...prev, ...uploadedUrls.filter(url => !prev.includes(url))]);
+      showToast('success', `${uploadedUrls.length} gallery image${uploadedUrls.length === 1 ? '' : 's'} uploaded.`);
+    } catch (error: any) {
+      showToast('error', error.message || 'Gallery upload failed.');
+    } finally {
+      setIsUploadingGallery(false);
+      if (galleryFileRef.current) galleryFileRef.current.value = '';
+    }
+  };
+
+  const addGalleryUrl = () => {
+    const url = galleryUrl.trim();
+    if (!url) return;
+    if (url !== formData.primary_image && !galleryImages.includes(url)) {
+      setGalleryImages(prev => [...prev, url]);
+    }
+    setGalleryUrl('');
+  };
+
+  const promoteGalleryImage = (url: string) => {
+    const currentPrimary = formData.primary_image;
+    setFormData(prev => ({ ...prev, primary_image: url }));
+    setImagePreviewFailed(false);
+    setGalleryImages(prev => [...(currentPrimary && currentPrimary !== url ? [currentPrimary] : []), ...prev.filter(image => image !== url)]);
   };
 
   // Inventory Qty Change
@@ -295,6 +407,12 @@ export default function EditProductPage() {
       : '0.0';
 
   const totalUnits = inventoryList.reduce((sum, inv) => sum + (Number(inv.quantity) || 0), 0);
+  const selectedCategory = categories.find(category => Number(category.id) === Number(formData.category_id));
+  const selectedSpecTemplate = getCategorySpecTemplate(
+    Number(formData.category_id),
+    selectedCategory?.slug,
+    selectedCategory?.name
+  );
 
   // Submit Handler
   const handleSubmit = async (e: React.FormEvent) => {
@@ -306,6 +424,26 @@ export default function EditProductPage() {
 
     try {
       setIsSaving(true);
+      const activeTemplateFields = selectedSpecTemplate?.sections.flatMap(section => section.fields) || [];
+      const activeTemplateKeys = new Set(activeTemplateFields.map(field => field.key));
+      const allTemplateFields = new Map<string, { label: string }>();
+      Object.values(ALL_SPEC_TEMPLATES).forEach(template => {
+        template.sections.flatMap(section => section.fields).forEach(field => {
+          if (!allTemplateFields.has(field.key)) allTemplateFields.set(field.key, field);
+        });
+      });
+      const templateSpecs = activeTemplateFields
+        .filter(field => templateSpecValues[field.key]?.trim())
+        .map(field => ({
+          custom_label: field.label,
+          attribute_value: templateSpecValues[field.key].trim(),
+        }));
+      const preservedOtherCategorySpecs = Array.from(allTemplateFields.entries())
+        .filter(([key]) => !activeTemplateKeys.has(key) && templateSpecValues[key]?.trim())
+        .map(([key, field]) => ({
+          custom_label: field.label,
+          attribute_value: templateSpecValues[key].trim(),
+        }));
       const payload = {
         ...formData,
         purchase_cost: Number(formData.purchase_cost),
@@ -314,7 +452,12 @@ export default function EditProductPage() {
         brand_id: Number(formData.brand_id),
         category_id: Number(formData.category_id),
         inventory: inventoryList,
-        specs: specsList.filter(s => s.custom_label.trim() && s.attribute_value.trim()),
+        specs: [
+          ...templateSpecs,
+          ...preservedOtherCategorySpecs,
+          ...specsList.filter(s => s.custom_label.trim() && s.attribute_value.trim()),
+        ],
+        images: galleryImages,
         key_features: formData.key_features.filter(f => f.trim().length > 0),
       };
 
@@ -528,6 +671,20 @@ export default function EditProductPage() {
                 onChange={handleChange}
                 placeholder="e.g. Pro Tower 290 G9"
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Manufacturer Part Number (MPN)
+              </label>
+              <input
+                type="text"
+                name="mpn"
+                value={formData.mpn}
+                onChange={handleChange}
+                placeholder="Optional manufacturer part number"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
             </div>
 
@@ -837,34 +994,113 @@ export default function EditProductPage() {
                 type="text"
                 name="primary_image"
                 value={formData.primary_image}
-                onChange={handleChange}
+                onChange={e => {
+                  setImagePreviewFailed(false);
+                  handleChange(e);
+                }}
                 placeholder="https://images.unsplash.com/... or /images/..."
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
               />
+              <input
+                ref={imageFileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                className="hidden"
+                onChange={e => handleImageUpload(e.target.files?.[0])}
+              />
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => imageFileRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isUploadingImage ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  {isUploadingImage ? 'Uploading image…' : 'Choose image'}
+                </button>
+                <span className="text-[11px] text-slate-500">JPEG, PNG, WebP, GIF, AVIF, or SVG · Max 8 MB</span>
+              </div>
               <p className="text-[11px] text-slate-400">
-                Provide a direct CDN link or static image path for high resolution showcase.
+                Upload an image from your device or paste a direct CDN link. Save the product to apply changes.
               </p>
             </div>
 
             {/* Live Image Preview */}
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center min-h-[140px]">
-              {formData.primary_image ? (
+              {formData.primary_image && !imagePreviewFailed ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={formData.primary_image}
                   alt={formData.name || 'Product Preview'}
                   className="max-h-28 max-w-full object-contain rounded-lg"
                   onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
+                    setImagePreviewFailed(true);
                   }}
                 />
               ) : (
                 <div className="text-center text-slate-400 text-xs">
                   <ImageIcon className="w-8 h-8 mx-auto mb-1 opacity-50" />
-                  <span>No image specified</span>
+                  <span>{imagePreviewFailed ? 'Image could not be loaded' : 'No image specified'}</span>
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white">Gallery Images</h3>
+                <p className="mt-1 text-[11px] text-slate-500">Add extra product photos. Choose a gallery photo to make it the primary image.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => galleryFileRef.current?.click()}
+                disabled={isUploadingGallery}
+                className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-200 disabled:opacity-60 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              >
+                {isUploadingGallery ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                {isUploadingGallery ? 'Uploading…' : 'Upload gallery images'}
+              </button>
+              <input
+                ref={galleryFileRef}
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                className="hidden"
+                onChange={e => handleGalleryUpload(e.target.files)}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={galleryUrl}
+                onChange={e => setGalleryUrl(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addGalleryUrl())}
+                placeholder="Paste an image URL"
+                className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+              />
+              <button type="button" onClick={addGalleryUrl} className="rounded-lg bg-brand-500 px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-600">
+                Add URL
+              </button>
+            </div>
+
+            {galleryImages.length ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                {galleryImages.map((url, index) => (
+                  <div key={`${url}-${index}`} className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-950">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`${formData.name} gallery ${index + 1}`} className="h-full w-full object-contain" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                      <button type="button" onClick={() => promoteGalleryImage(url)} className="rounded-md bg-amber-400 px-2 py-1 text-[10px] font-bold text-slate-950">Set primary</button>
+                      <button type="button" onClick={() => setGalleryImages(prev => prev.filter((_, i) => i !== index))} className="rounded-md bg-rose-600 px-2 py-1 text-[10px] font-bold text-white">Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-[11px] text-slate-500 dark:bg-slate-950">No gallery images added.</p>
+            )}
           </div>
         </div>
 
@@ -931,6 +1167,31 @@ export default function EditProductPage() {
               ))}
             </div>
           </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">What&apos;s in the Box</label>
+              <textarea
+                name="what_in_box"
+                value={formData.what_in_box}
+                onChange={handleChange}
+                rows={3}
+                placeholder="List the items included with the product"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Warranty Details</label>
+              <textarea
+                name="warranty_info"
+                value={formData.warranty_info}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Describe warranty coverage and support"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+              />
+            </div>
+          </div>
         </div>
 
         {/* ── SECTION 7: TECHNICAL SPECIFICATIONS ── */}
@@ -939,7 +1200,7 @@ export default function EditProductPage() {
             <div className="flex items-center gap-2">
               <Sliders className="w-4 h-4 text-sky-500" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                7. Technical Specifications Table
+                7. Technical Specifications — {selectedCategory?.name || 'Custom Category'}
               </h2>
             </div>
             <button
@@ -951,6 +1212,63 @@ export default function EditProductPage() {
             </button>
           </div>
 
+          {selectedSpecTemplate ? (
+            <div className="space-y-5">
+              {selectedSpecTemplate.sections.map(section => (
+                <section key={section.title} className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+                  <h3 className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
+                    {section.title}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
+                    {section.fields.map((field: any) => (
+                      <div key={field.key} className="space-y-1.5">
+                        <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                          {field.label}{field.required ? ' *' : ''}
+                        </label>
+                        {field.type === 'textarea' ? (
+                          <textarea
+                            rows={2}
+                            value={templateSpecValues[field.key] || ''}
+                            onChange={e => setTemplateSpecValues(prev => ({ ...prev, [field.key]: e.target.value }))}
+                            placeholder={field.placeholder || `Enter ${field.label}`}
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                          />
+                        ) : field.type === 'select' ? (
+                          <select
+                            value={templateSpecValues[field.key] || ''}
+                            onChange={e => setTemplateSpecValues(prev => ({ ...prev, [field.key]: e.target.value }))}
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                          >
+                            <option value="">Select {field.label}</option>
+                            {(field.options || []).map((option: string) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type === 'number' ? 'number' : 'text'}
+                            value={templateSpecValues[field.key] || ''}
+                            onChange={e => setTemplateSpecValues(prev => ({ ...prev, [field.key]: e.target.value }))}
+                            placeholder={field.placeholder || `Enter ${field.label}`}
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                          />
+                        )}
+                        {field.helper && <p className="text-[10px] text-slate-500">{field.helper}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-950 dark:text-slate-400">
+              This category has no predefined specification template. Add custom name and value fields below.
+            </p>
+          )}
+
+          {specsList.length > 0 && (
+            <h3 className="pt-2 text-xs font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300">
+              Additional saved specifications
+            </h3>
+          )}
           <div className="space-y-2.5">
             {specsList.map((spec, idx) => (
               <div key={idx} className="flex items-center gap-3">
@@ -1016,6 +1334,18 @@ export default function EditProductPage() {
                 rows={2}
                 placeholder="Meta description for Google search snippet..."
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Focus Keyword</label>
+              <input
+                type="text"
+                name="focus_keyword"
+                value={formData.focus_keyword}
+                onChange={handleChange}
+                placeholder="Primary search keyword for this product"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
               />
             </div>
           </div>

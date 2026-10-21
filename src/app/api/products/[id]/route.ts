@@ -54,10 +54,11 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
     );
 
     const inventory = await query<any[]>(
-      `SELECT inv.*, b.name as branch_name, b.code as branch_code, b.type as branch_type
-       FROM inventory inv
-       JOIN branches b ON inv.branch_id = b.id
-       WHERE inv.product_id = ?
+      `SELECT b.id as branch_id, b.name as branch_name, b.code as branch_code, b.type as branch_type,
+              COALESCE(inv.quantity, 0) as quantity,
+              COALESCE(inv.shelf_location, CONCAT('SHELF-', b.id, '-01')) as shelf_location
+       FROM branches b
+       LEFT JOIN inventory inv ON inv.branch_id = b.id AND inv.product_id = ?
        ORDER BY b.id ASC`,
       [productId]
     );
@@ -208,8 +209,19 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       ]
     );
 
-    // 2. Update Primary / Additional Images
-    if (primary_image) {
+    // 2. Replace product images when the edit form sends the full image list.
+    if (Array.isArray(images)) {
+      const imageUrls = [...new Set([primary_image, ...images]
+        .map((image: any) => typeof image === 'string' ? image : image?.image_url)
+        .filter((url: any) => typeof url === 'string' && url.trim()))];
+      await query(`DELETE FROM product_images WHERE product_id = ?`, [productId]);
+      for (const [index, imageUrl] of imageUrls.entries()) {
+        await query(
+          `INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES (?, ?, ?, ?)`,
+          [productId, imageUrl, name, index === 0 ? 1 : 0]
+        );
+      }
+    } else if (primary_image) {
       const existingPrimary = await query<any[]>(
         `SELECT id FROM product_images WHERE product_id = ? AND is_primary = 1 LIMIT 1`,
         [productId]
