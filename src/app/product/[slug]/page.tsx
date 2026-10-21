@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
      FROM products p
      JOIN brands b ON p.brand_id = b.id
      LEFT JOIN product_seo ps ON p.id = ps.product_id
-     WHERE p.slug = ?`,
+     WHERE p.slug = ? AND p.status = 'published'`,
     [slug]
   );
 
@@ -74,7 +74,7 @@ export default async function ProductDetailPage({ params }: Props) {
      JOIN categories c ON p.category_id = c.id
      LEFT JOIN product_descriptions pd ON p.id = pd.product_id
      LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-     WHERE p.slug = ?`,
+     WHERE p.slug = ? AND p.status = 'published'`,
     [slug]
   );
 
