@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { revalidatePath } from 'next/cache';
+import { query, withTransaction } from '@/lib/db';
 import { logAudit } from '@/lib/audit';
 import { ensureLandingProductTable } from '@/lib/landing-products';
 import { LANDING_PRODUCT_POSITIONS } from '@/lib/landing-product-config';
@@ -23,7 +24,9 @@ export async function GET(req: NextRequest) {
        ORDER BY lp.position, lp.order_index, lp.id`,
       params
     );
-    return NextResponse.json({ success: true, placements });
+    return NextResponse.json({ success: true, placements }, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
   } catch (error: any) {
     console.error('Fetch landing product placements error:', error);
     return NextResponse.json({ success: false, error: 'Failed to load landing product placements.' }, { status: 500 });
@@ -51,24 +54,46 @@ export async function PUT(req: NextRequest) {
     }
 
     const uniqueIds = [...new Set(productIds)];
-    await query(`DELETE FROM landing_product_placements WHERE position = ?`, [position]);
-    for (const [orderIndex, productId] of uniqueIds.entries()) {
-      await query(
-        `INSERT INTO landing_product_placements (position, product_id, order_index, is_active)
-         SELECT ?, id, ?, 1 FROM products WHERE id = ? AND status = 'published'`,
-        [position, productId, orderIndex]
+    const savedIds = await withTransaction(async (connection) => {
+      await connection.query(`DELETE FROM landing_product_placements WHERE position = ?`, [position]);
+      for (const [orderIndex, productId] of uniqueIds.entries()) {
+        await connection.query(
+          `INSERT INTO landing_product_placements (position, product_id, order_index, is_active)
+           SELECT ?, id, ?, 1 FROM products WHERE id = ? AND status = 'published'`,
+          [position, orderIndex, productId]
+        );
+      }
+
+      const [rows] = await connection.query<any[]>(
+        `SELECT product_id
+         FROM landing_product_placements
+         WHERE position = ? AND is_active = 1
+         ORDER BY order_index ASC, id ASC`,
+        [position]
       );
-    }
+      const ids = rows.map((row) => Number(row.product_id));
+      if (ids.length !== uniqueIds.length || ids.some((id, index) => id !== uniqueIds[index])) {
+        throw new Error('The selected products could not be verified after saving.');
+      }
+      return ids;
+    });
 
     await logAudit({
       module: 'landing_page',
       action: 'update_product_placements',
       newData: { position, productIds: uniqueIds },
     });
+    revalidatePath('/', 'page');
 
-    return NextResponse.json({ success: true, message: 'Landing page products updated.' });
+    return NextResponse.json(
+      { success: true, message: 'Landing page products updated.', position, productIds: savedIds },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
   } catch (error: any) {
     console.error('Update landing product placements error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to update landing page products.' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error?.message || 'Failed to update landing page products.' },
+      { status: 500 }
+    );
   }
 }

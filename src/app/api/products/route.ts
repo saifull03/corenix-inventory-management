@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     }
 
     const limitParam = parseInt(searchParams.get('limit') || '50', 10);
-    const limit = Math.min(Math.max(1, isNaN(limitParam) ? 50 : limitParam), 500);
+    const limit = Math.min(Math.max(1, isNaN(limitParam) ? 50 : limitParam), 5000);
 
     const products = await query<any[]>(
       `SELECT p.*,

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,9 +47,8 @@
   --grey-900: #161A23;
 
   /* Typography Fonts */
-  --font-ui: "DM Sans", "Hind Siliguri", sans-serif;
-  --font-display: "DM Serif Display", Georgia, serif;
-  --font-bn: "Hind Siliguri", "Noto Sans Bengali", "Instrument Sans", sans-serif;
+  --font-ui: ui-sans-serif, system-ui, sans-serif;
+  --font-bn: ui-sans-serif, system-ui, sans-serif;
 
   /* Radius scale */
   --r-badge: 4px;
@@ -253,10 +250,7 @@ body {
   transition: background-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
 }
 
-h1, h2, h3, .t-display, .t-h1, .t-h2 {
-  font-family: var(--font-display);
-  font-weight: 400;
-}
+
 
 button, a, input, select, textarea {
   transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease),

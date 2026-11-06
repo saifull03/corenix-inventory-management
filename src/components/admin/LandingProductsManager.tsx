@@ -10,6 +10,8 @@ interface Product {
   sku: string;
   primary_image?: string;
   brand_name?: string;
+  stock_status?: string;
+  total_stock?: number | null;
 }
 
 interface Placement {
@@ -32,13 +34,23 @@ export default function LandingProductsManager() {
     setLoading(true);
     try {
       const [productsRes, placementsRes] = await Promise.all([
-        fetch('/api/products?limit=500'),
-        fetch('/api/admin/landing-products'),
+        fetch('/api/products?limit=5000', { cache: 'no-store' }),
+        fetch('/api/admin/landing-products', { cache: 'no-store' }),
       ]);
       const productsData = await productsRes.json();
       const placementsData = await placementsRes.json();
+      if (!productsRes.ok) throw new Error(productsData.error || 'Unable to load products.');
+      if (!placementsRes.ok || !placementsData.success) {
+        throw new Error(placementsData.error || 'Unable to load saved product placements.');
+      }
       setProducts(productsData.products || []);
-      setPlacements(placementsData.placements || []);
+      setPlacements(
+        (placementsData.placements || []).map((placement: Placement) => ({
+          ...placement,
+          product_id: Number(placement.product_id),
+          order_index: Number(placement.order_index),
+        }))
+      );
     } finally {
       setLoading(false);
     }
@@ -51,7 +63,7 @@ export default function LandingProductsManager() {
       placements
         .filter((placement) => placement.position === position)
         .sort((a, b) => a.order_index - b.order_index)
-        .map((placement) => placement.product_id)
+        .map((placement) => Number(placement.product_id))
     );
   }, [placements, position]);
 
@@ -79,12 +91,20 @@ export default function LandingProductsManager() {
       const res = await fetch('/api/admin/landing-products', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ position, productIds: selected }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error);
+      if (!res.ok || !data.success) throw new Error(data.error || 'Unable to save product placements.');
       setMessage('Saved. The landing page now uses this product order.');
-      await load();
+      setPlacements((current) => [
+        ...current.filter((placement) => placement.position !== position),
+        ...selected.map((productId, orderIndex) => ({
+          position,
+          product_id: productId,
+          order_index: orderIndex,
+        })),
+      ]);
     } catch (error: any) {
       setMessage(error.message || 'Unable to save product placements.');
     } finally {
@@ -103,7 +123,7 @@ export default function LandingProductsManager() {
         </div>
         <h1 className="mt-2 text-3xl font-black text-slate-900 dark:text-white">Choose what customers see</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-          Select products and arrange their order for each landing-page section. Leave a section empty to keep its automatic product selection.
+          Select products and arrange their order for each landing-page section. Only the products you save will appear in that section.
         </p>
       </header>
 
@@ -142,6 +162,45 @@ export default function LandingProductsManager() {
 
       {message && <p className="border-l-2 border-sky-600 px-3 py-2 text-sm text-slate-600 dark:text-slate-300">{message}</p>}
 
+      <section className="border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+            Selected products
+          </h2>
+          {selected.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelected([])}
+              className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-red-600 hover:underline focus-visible:ring-2 focus-visible:ring-red-400"
+            >
+              Unselect all
+            </button>
+          )}
+        </div>
+        {selected.length === 0 ? (
+          <p className="text-xs text-slate-500">No products selected. This landing-page section will remain empty until you save a selection.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {selected.map((productId, index) => {
+              const product = products.find((item) => item.id === productId);
+              return (
+                <button
+                  key={productId}
+                  type="button"
+                  onClick={() => toggleProduct(productId)}
+                  className="inline-flex max-w-full items-center gap-2 border border-sky-700 bg-white px-2 py-1.5 text-left text-xs text-slate-700 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700 active:bg-red-100 dark:border-sky-500 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300 focus-visible:ring-2 focus-visible:ring-sky-400"
+                  aria-label={`Unselect ${product?.name || 'product'}`}
+                >
+                  <span className="font-bold text-sky-700 dark:text-sky-300">{index + 1}</span>
+                  <span className="max-w-[220px] truncate">{product?.name || `Product #${productId}`}</span>
+                  <span aria-hidden="true" className="text-base leading-none">×</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       <label className="relative block max-w-xl">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
         <input
@@ -158,13 +217,15 @@ export default function LandingProductsManager() {
         <div className="grid gap-x-6 border-t border-slate-200 dark:border-slate-800 md:grid-cols-2">
           {filteredProducts.map((product) => {
             const selectedIndex = selected.indexOf(product.id);
+            const available = Number(product.total_stock || 0) > 0;
             return (
               <button
                 key={product.id}
                 type="button"
                 onClick={() => toggleProduct(product.id)}
+                aria-pressed={selectedIndex >= 0}
                 className={`flex items-center gap-3 border-b border-slate-200 py-3 text-left transition-colors hover:bg-slate-100 active:bg-slate-200 dark:border-slate-800 dark:hover:bg-slate-900 dark:active:bg-slate-800 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-400 ${
-                  selectedIndex >= 0 ? 'bg-slate-100 dark:bg-slate-900' : ''
+                  selectedIndex >= 0 ? 'bg-sky-50 ring-1 ring-inset ring-sky-300 dark:bg-sky-950/30 dark:ring-sky-800' : ''
                 }`}
               >
                 <span className="w-5 text-center text-xs font-bold text-slate-400">
@@ -176,6 +237,9 @@ export default function LandingProductsManager() {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-slate-800 dark:text-slate-100">{product.name}</span>
                   <span className="block truncate text-xs text-slate-500">{product.brand_name || 'CORENIX'} · {product.sku}</span>
+                  <span className={`mt-1 inline-flex text-[10px] font-bold uppercase tracking-wide ${available ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                    {available ? `Available · ${Number(product.total_stock)} units` : 'Out of stock'}
+                  </span>
                 </span>
                 <span className={`flex h-5 w-5 shrink-0 items-center justify-center border ${selectedIndex >= 0 ? 'border-sky-700 bg-sky-700 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                   {selectedIndex >= 0 && <Check className="h-3.5 w-3.5" />}

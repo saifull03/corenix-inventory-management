@@ -25,7 +25,8 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 
-export const revalidate = 60; // ISR cache revalidation
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
   // Fetch all active banners for dynamic management from Admin Panel
@@ -134,9 +135,9 @@ export default async function HomePage() {
     getLandingProducts('gaming_laptops', 8),
     getLandingProducts('accessories', 8),
   ]);
-  const landingFeaturedProducts = managedFeatured.length > 0 ? managedFeatured : featuredProducts;
-  const landingGamingLaptops = managedLaptops.length > 0 ? managedLaptops : gamingLaptops;
-  const landingAccessories = managedAccessories.length > 0 ? managedAccessories : accessoryProducts;
+  const landingFeaturedProducts = managedFeatured;
+  const landingGamingLaptops = managedLaptops;
+  const landingAccessories = managedAccessories;
 
   // Fetch official brands
   const brands = await query<Brand[]>(

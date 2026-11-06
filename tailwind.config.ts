@@ -162,9 +162,9 @@ const config: Config = {
         }
       },
       fontFamily: {
-        ui: ["var(--font-ui)", "DM Sans", "Hind Siliguri", "sans-serif"],
-        bn: ["var(--font-bn)", "Hind Siliguri", "Noto Sans Bengali", "sans-serif"],
-        sans: ["var(--font-ui)", "DM Sans", "Hind Siliguri", "sans-serif"],
+        ui: ["ui-sans-serif", "system-ui", "sans-serif"],
+        bn: ["ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "Menlo", "monospace"],
       },
       borderRadius: {

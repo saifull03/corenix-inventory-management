@@ -37,8 +37,8 @@ export async function getLandingProducts(position: string, limit: number) {
               (SELECT SUM(quantity - reserved_qty) FROM inventory WHERE product_id = p.id) as total_stock
        FROM landing_product_placements lp
        JOIN products p ON p.id = lp.product_id
-       JOIN brands b ON p.brand_id = b.id
-       JOIN categories c ON p.category_id = c.id
+       LEFT JOIN brands b ON p.brand_id = b.id
+       LEFT JOIN categories c ON p.category_id = c.id
        WHERE lp.position = ? AND lp.is_active = 1 AND p.status = 'published'
        ORDER BY lp.order_index ASC, lp.id ASC
        LIMIT ${Math.max(1, Math.min(limit, 24))}`,
