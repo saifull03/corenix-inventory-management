@@ -17,12 +17,12 @@ import {
   Layers,
   Flame,
   Star,
-  Sparkles,
   Shield,
   Activity,
   Clock,
   ArrowRight,
   Receipt,
+  LayoutTemplate,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -195,6 +195,13 @@ export default async function AdminDashboardPage() {
             <Receipt className="w-4 h-4" />
             <span>Launch POS Terminal</span>
           </Link>
+          <Link
+            href="/admin/landing-products"
+            className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 hover:border-sky-500 hover:text-sky-700 dark:hover:text-brand-300 transition-colors"
+          >
+            <LayoutTemplate className="w-4 h-4" />
+            <span>Landing Products</span>
+          </Link>
         </div>
       </div>
 
@@ -258,7 +265,6 @@ export default async function AdminDashboardPage() {
         <div className="space-y-1.5 max-w-xl">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
               Homepage Promotion Control
             </span>
           </div>
@@ -560,4 +566,3 @@ export default async function AdminDashboardPage() {
     </div>
   );
 }
-

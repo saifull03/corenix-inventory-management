@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 
 export interface Banner {
@@ -243,7 +242,6 @@ export default function HeroSlider({
             <div className="flex items-center">
               {banner.badge_text && (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-bold backdrop-blur-md shadow-xs">
-                  <Sparkles className="w-3.5 h-3.5 text-sky-300 animate-pulse" />
                   <span>{banner.badge_text}</span>
                 </div>
               )}
@@ -286,7 +284,6 @@ export default function HeroSlider({
                   href={banner.link_url}
                   className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-sky-500/30 transition-all hover:scale-102 active:scale-98"
                 >
-                  <Sparkles className="w-4 h-4" />
                   <span>{banner.button_text || 'Shop Now'}</span>
                 </Link>
 

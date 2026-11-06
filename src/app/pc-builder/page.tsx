@@ -25,7 +25,6 @@ import {
   ShoppingCart,
   Share2,
   Printer,
-  Sparkles,
   Search,
   X,
   Check,
@@ -704,7 +703,6 @@ export default function PcBuilderPage() {
         <div className="print:hidden p-5 sm:p-6 rounded-2xl bg-white dark:bg-gradient-to-r dark:from-navy-900 dark:via-slate-900 dark:to-navy-900 border border-slate-200/80 dark:border-slate-800 mb-6 flex items-center justify-between flex-wrap gap-4 shadow-xs">
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-50 dark:bg-brand-500/10 border border-sky-200 dark:border-brand-500/30 text-sky-700 dark:text-brand-300 text-[11px] font-bold mb-1.5">
-              <Sparkles className="w-3 h-3" />
               <span>Real-Time Hardware Compatibility • Dual RAM & Storage Support</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
@@ -1184,7 +1182,6 @@ export default function PcBuilderPage() {
                                 </span>
                               ) : p.stock_status === 'Up Coming' ? (
                                 <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
-                                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                                   Upcoming
                                 </span>
                               ) : p.stock_status === '2-3 Days' ? (

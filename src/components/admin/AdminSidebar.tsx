@@ -65,6 +65,7 @@ const rawMenuItems: MenuItemDef[] = [
   { label: 'Reports & Profit Analysis', href: '/admin/reports', icon: BarChart3, financeAccess: true },
   { label: 'SEO & Landing Pages', href: '/admin/seo', icon: Search },
   { label: 'Banners & Slider', href: '/admin/banners', icon: LayoutTemplate },
+  { label: 'Landing Page Products', href: '/admin/landing-products', icon: LayoutTemplate },
   { label: 'Users & Staff RBAC', href: '/admin/users', icon: Users, hrOrAdminOnly: true },
   { label: 'Operator Approvals', href: '/admin/approvals', icon: CheckSquare },
   { label: 'ERP Integration Sync', href: '/admin/erp', icon: RefreshCw },

@@ -6,8 +6,8 @@ import ProductCard from '@/components/products/ProductCard';
 import HeroSlider from '@/components/layout/HeroSlider';
 import { query } from '@/lib/db';
 import { Product, Category, Brand } from '@/lib/types';
+import { getLandingProducts } from '@/lib/landing-products';
 import {
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Cpu,
@@ -129,6 +129,15 @@ export default async function HomePage() {
 
   const accessoryProducts = rawAccessories && rawAccessories.length > 0 ? rawAccessories : featuredProducts.slice(2, 6);
 
+  const [managedFeatured, managedLaptops, managedAccessories] = await Promise.all([
+    getLandingProducts('featured', 8),
+    getLandingProducts('gaming_laptops', 8),
+    getLandingProducts('accessories', 8),
+  ]);
+  const landingFeaturedProducts = managedFeatured.length > 0 ? managedFeatured : featuredProducts;
+  const landingGamingLaptops = managedLaptops.length > 0 ? managedLaptops : gamingLaptops;
+  const landingAccessories = managedAccessories.length > 0 ? managedAccessories : accessoryProducts;
+
   // Fetch official brands
   const brands = await query<Brand[]>(
     `SELECT id, name, slug, logo, country, short_desc
@@ -181,7 +190,6 @@ export default async function HomePage() {
               <span className="font-semibold">Dedicated In-House RMA Hub</span>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-500 dark:text-purple-400 flex-shrink-0" />
               <span className="font-semibold">DLSS 4 &amp; RTX 50 Series Available</span>
             </div>
           </div>
@@ -249,7 +257,7 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((prod, idx) => (
+              {landingFeaturedProducts.map((prod, idx) => (
                 <ProductCard key={`feat-prod-${prod.id}-${idx}`} product={prod} />
               ))}
             </div>
@@ -303,7 +311,7 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {gamingLaptops.map((prod, idx) => (
+              {landingGamingLaptops.map((prod, idx) => (
                 <ProductCard key={`laptop-prod-${prod.id}-${idx}`} product={prod} />
               ))}
             </div>
@@ -357,7 +365,7 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {accessoryProducts.map((prod, idx) => (
+              {landingAccessories.map((prod, idx) => (
                 <ProductCard key={`acc-prod-${prod.id}-${idx}`} product={prod} />
               ))}
             </div>
@@ -399,7 +407,6 @@ export default async function HomePage() {
                   href="/pc-builder"
                   className="px-6 py-3.5 rounded-2xl bg-sky-500 hover:bg-sky-400 text-navy-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all hover:scale-102"
                 >
-                  <Sparkles className="w-4 h-4" />
                   <span>Start Custom Build</span>
                 </Link>
 

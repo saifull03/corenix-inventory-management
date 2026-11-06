@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { query } from '@/lib/db';
-import { Search, Plus, ExternalLink, Globe, Sparkles, TrendingUp, AlertCircle, FileText } from 'lucide-react';
+import { Search, Plus, ExternalLink, Globe, TrendingUp, AlertCircle, FileText } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,7 +58,6 @@ export default async function AdminSeoPage() {
       <div className="p-6 rounded-2xl bg-navy-900 border border-slate-800 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-brand-400" />
             <span>High-Value SEO Commercial Landing Pages</span>
           </h2>
           <span className="text-xs text-slate-400">{seoLandingPages.length} Active Pages</span>

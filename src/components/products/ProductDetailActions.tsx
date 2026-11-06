@@ -6,7 +6,6 @@ import {
   ShoppingCart,
   Check,
   PhoneCall,
-  Sparkles,
   Clock,
   Bell,
   Heart,
@@ -228,7 +227,6 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
               onClick={() => alert(`You'll be notified on launch of "${product.name}"!`)}
               className="flex-1 h-11 rounded-lg bg-amber-500 hover:bg-amber-400 text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
-              <Sparkles className="w-4 h-4" />
               <span>Notify on Release</span>
             </button>
           ) : (
@@ -312,7 +310,6 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
             href={`/pc-builder?select=${product.pc_builder_component}&pid=${product.id}`}
             className="w-full py-2.5 px-4 rounded-lg border border-[#2340D0]/30 dark:border-[#4F6BEA]/30 bg-[#2340D0]/5 dark:bg-[#4F6BEA]/5 text-[#2340D0] dark:text-[#4F6BEA] font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#2340D0]/10 transition-colors"
           >
-            <Sparkles className="w-3.5 h-3.5" />
             <span>Add to Custom PC Build ({product.pc_builder_component?.toUpperCase()})</span>
           </Link>
         )}

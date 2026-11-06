@@ -21,7 +21,6 @@ import {
   Wrench,
   Gift,
   LogOut,
-  Sparkles,
   ExternalLink,
   ChevronRight,
   MapPin,
@@ -1062,7 +1061,6 @@ function AccountPageContent() {
                   <div>
                     {/* Auto-routing Banner */}
                     <div className="mb-6 p-3.5 rounded-2xl bg-sky-50/80 dark:bg-navy-800/80 border border-sky-200/80 dark:border-sky-500/30 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2.5">
-                      <Sparkles className="w-4 h-4 text-sky-600 dark:text-cyan-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-slate-900 dark:text-white font-bold block">
                           Smart Single-Sign-On
@@ -1370,7 +1368,6 @@ function AccountPageContent() {
                           </>
                         ) : (
                           <>
-                            <Sparkles className="w-4 h-4" />
                             <span>Create Account & Get 50 Points</span>
                           </>
                         )}
@@ -1413,7 +1410,6 @@ function AccountPageContent() {
 
                     <li className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Sparkles className="w-4 h-4" />
                       </div>
                       <div>
                         <strong className="text-white block font-bold">Interactive PC Builder</strong>
@@ -1480,7 +1476,6 @@ function AccountPageContent() {
               <div className="flex items-start justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
                 <div>
                   <div className="text-xl font-black tracking-wider text-sky-600 dark:text-cyan-400 flex items-center gap-1.5">
-                    <Sparkles className="w-5 h-5" />
                     <span>CORENIX NEXT-GEN TECH</span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -1635,4 +1630,3 @@ export default function AccountPage() {
     </React.Suspense>
   );
 }
-

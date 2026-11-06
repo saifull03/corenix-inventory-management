@@ -17,7 +17,6 @@ import {
   ArrowUpRight,
   Package,
   Layers,
-  Sparkles,
   CreditCard,
   Phone,
   FileSpreadsheet,

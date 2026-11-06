@@ -12,7 +12,6 @@ import {
   Download,
   Calendar,
   Layers,
-  Sparkles,
   ArrowRight,
   ExternalLink,
   ChevronRight,

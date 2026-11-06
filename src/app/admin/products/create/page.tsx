@@ -14,7 +14,6 @@ import {
   CheckCircle,
   FileText,
   Search,
-  Sparkles,
   ArrowRight,
   ArrowLeft,
   Eye,
@@ -509,7 +508,6 @@ export default function CreateProductPage() {
                     onChange={(e) => handleChange('is_new', e.target.checked)}
                     className="rounded text-brand-500"
                   />
-                  <span>✨ New Arrival Badge</span>
                 </label>
               </div>
             </div>
@@ -1139,7 +1137,6 @@ export default function CreateProductPage() {
                       className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-[11px] flex items-center gap-1.5 shadow-sm transition-all"
                       title="Autofill standard official specs preset"
                     >
-                      <Sparkles className="w-3.5 h-3.5 fill-black" />
                       <span>⚡ Load Official Preset</span>
                     </button>
                   )}
@@ -1540,7 +1537,6 @@ export default function CreateProductPage() {
         {activeTab === 12 && (
           <div className="space-y-6 text-center py-6">
             <div className="w-16 h-16 rounded-full bg-cyan-950 border border-brand-500/40 text-brand-400 mx-auto flex items-center justify-center">
-              <Sparkles className="w-8 h-8" />
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">

@@ -26,7 +26,6 @@ import {
   ArrowRight,
   Barcode,
   Check,
-  Sparkles,
   Info,
   Layers,
   Edit3

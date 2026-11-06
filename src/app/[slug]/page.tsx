@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import ProductCard from '@/components/products/ProductCard';
 import { query, queryOne } from '@/lib/db';
 import { SeoLandingPage, Product } from '@/lib/types';
-import { Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
+import { HelpCircle, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface Props {

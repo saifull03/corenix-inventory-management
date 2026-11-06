@@ -17,7 +17,6 @@ import {
   ArrowRight,
   Package,
   Layers,
-  Sparkles,
   HelpCircle,
   Truck,
   CreditCard

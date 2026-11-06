@@ -26,7 +26,6 @@ import {
   Sun,
   ShieldCheck,
   ArrowRight,
-  Sparkles,
   Calculator,
   HelpCircle,
   Clock,
@@ -483,7 +482,6 @@ export default function UpsCalculatorPage() {
           {/* Quick Preset Buttons Bar */}
           <div className="relative z-10 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Quick Presets:</span>
             </span>
 

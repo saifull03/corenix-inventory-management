@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   FileText,
   Search,
-  Sparkles,
   ArrowLeft,
   ExternalLink,
   ShieldCheck,
@@ -753,7 +752,6 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   className="rounded border-slate-300 dark:border-slate-700 text-brand-500 focus:ring-brand-400 w-4 h-4"
                 />
-                <span>✨ New Arrival Badge</span>
               </label>
             </div>
           </div>
@@ -1107,7 +1105,6 @@ export default function EditProductPage() {
         {/* ── SECTION 6: KEY FEATURES & OVERVIEW ── */}
         <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-5 shadow-xs">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <Sparkles className="w-4 h-4 text-amber-500" />
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               6. Overview &amp; Key Highlights
             </h2>

@@ -26,7 +26,6 @@ import {
   X,
   History,
   QrCode,
-  Sparkles,
   Phone,
   Mail,
   MapPin,
@@ -594,7 +593,6 @@ export default function PosPage() {
                 onClick={() => setIsPcBuilderModalOpen(true)}
                 className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xs hover:from-purple-500 hover:to-indigo-500 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5" />
                 <span>Assemble Whole PC</span>
               </button>
 
@@ -1257,7 +1255,7 @@ export default function PosPage() {
                           : 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900'
                       }`}
                     >
-                      ✨ Whole PC &amp; Bundles
+                      Whole PC &amp; Bundles
                     </button>
                     <button
                       onClick={() => setSelectedCategoryFilter('other_house')}
@@ -2149,7 +2147,6 @@ export default function PosPage() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-lg border border-purple-200 dark:border-purple-800">
-                  <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
@@ -2318,7 +2315,6 @@ export default function PosPage() {
                   }}
                   className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs shadow-md flex items-center gap-2 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4" />
                   <span>
                     Add Build (
                     {Object.values(pcBuilderSelections).filter(Boolean).length} Components) to Sale Ticket

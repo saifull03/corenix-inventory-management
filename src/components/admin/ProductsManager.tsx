@@ -17,7 +17,6 @@ import {
   Hash,
   Tag,
   Layers,
-  Sparkles,
   ChevronDown,
   Check,
   Flame,
@@ -340,7 +339,6 @@ export default function ProductsManager({ initialProducts }: Props) {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
             Hardware &amp; Homepage Promotion Management
           </span>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white">
@@ -442,7 +440,6 @@ export default function ProductsManager({ initialProducts }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
               PC Builder Pool
             </span>
             <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300">

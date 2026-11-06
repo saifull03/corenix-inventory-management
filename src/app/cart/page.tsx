@@ -14,7 +14,6 @@ import {
   ArrowLeft,
   PackageOpen,
   CheckCircle2,
-  Sparkles,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
@@ -336,7 +335,6 @@ export default function CartPage() {
                 href="/pc-builder"
                 className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-2 transition-colors border border-slate-200 dark:border-slate-700"
               >
-                <Sparkles className="w-3.5 h-3.5 text-sky-600 dark:text-brand-400" />
                 <span>Custom PC Builder</span>
               </Link>
             </div>

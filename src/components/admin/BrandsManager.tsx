@@ -12,7 +12,6 @@ import {
   X,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
   Tag,
   Loader2,
   Upload,
@@ -412,7 +411,6 @@ export default function BrandsManager({ initialBrands }: Props) {
                     <td className="py-3.5 px-3 sm:px-4 text-center">
                       {b.is_featured ? (
                         <span className="px-2.5 py-0.5 rounded-full bg-cyan-950 text-brand-300 border border-brand-800 text-[10px] font-bold inline-flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-brand-400" />
                           <span>Featured</span>
                         </span>
                       ) : (
@@ -678,7 +676,6 @@ export default function BrandsManager({ initialBrands }: Props) {
               <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-brand-400" />
                     <span>Featured Partner</span>
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">

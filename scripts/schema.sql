@@ -641,6 +641,20 @@ CREATE TABLE IF NOT EXISTS `banners` (
   `is_active` BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `landing_product_placements` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `position` VARCHAR(40) NOT NULL,
+  `product_id` INT NOT NULL,
+  `order_index` INT NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_landing_position_product` (`position`, `product_id`),
+  KEY `idx_landing_position` (`position`, `is_active`, `order_index`),
+  CONSTRAINT `fk_landing_product` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 23. SEO Landing Page Builder
 CREATE TABLE IF NOT EXISTS `seo_landing_pages` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,

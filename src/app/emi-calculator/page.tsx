@@ -19,7 +19,6 @@ import {
   Building2,
   ChevronDown,
   ChevronUp,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   HelpCircle,
@@ -417,7 +416,6 @@ function EmiCalculatorContent() {
 
               {productTitle && (
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-white/10 border border-purple-200 dark:border-white/20 text-xs font-semibold text-purple-800 dark:text-cyan-300 shadow-2xs">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-cyan-400" />
                   <span>Configuring EMI for: <strong>{productTitle}</strong></span>
                 </div>
               )}
@@ -465,7 +463,6 @@ function EmiCalculatorContent() {
           {/* Quick Hardware Price Presets Bar */}
           <div className="relative z-10 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Quick Tiers:</span>
             </span>
 
@@ -521,7 +518,6 @@ function EmiCalculatorContent() {
               </div>
             </div>
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                 0% Interest Bank EMI
               </h3>
