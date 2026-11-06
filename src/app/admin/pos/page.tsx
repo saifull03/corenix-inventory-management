@@ -951,16 +951,9 @@ export default function PosPage() {
                 {/* Store Header */}
                 <div className="invoice-header text-center space-y-1 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
                   <div className="invoice-header-logo flex items-center justify-center mb-1">
-                    <img
-                      src="/images/logo.png"
-                      alt="CORENIX"
-                      className="h-9 w-auto object-contain dark:hidden print:block"
-                    />
-                    <img
-                      src="/images/logo-dark.png"
-                      alt="CORENIX"
-                      className="h-9 w-auto object-contain hidden dark:block print:hidden"
-                    />
+                    <span className="text-2xl font-black tracking-tight text-slate-950 dark:text-white print:text-black">
+                      CORENIX
+                    </span>
                   </div>
                   <h2 className="invoice-header-title text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase print:text-black">
                     CORENIX TECHNOLOGY RETAIL

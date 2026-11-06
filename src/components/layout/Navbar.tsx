@@ -102,21 +102,14 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-navy-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-navy-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       {/* Main navigation row */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        {/* Brand Logo */}
+        {/* Brand Name */}
         <Link href="/" className="flex items-center group flex-shrink-0">
-          <img
-            src="/images/logo.png"
-            alt="CORENIX Logo"
-            className="h-12 sm:h-14 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
-          />
-          <img
-            src="/images/logo-dark.png"
-            alt="CORENIX Logo"
-            className="h-12 sm:h-14 w-auto object-contain hidden dark:block brightness-0 invert group-hover:scale-105 transition-transform"
-          />
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 dark:text-white group-hover:scale-105 transition-transform">
+            CORENIX
+          </span>
         </Link>
 
         {/* Global Search Bar with Live Suggestions */}
@@ -128,12 +121,12 @@ export default function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
               placeholder="Search RTX 5060, Core i7, DDR5 RAM, Gaming Laptops, SKU..."
-              className="w-full bg-slate-100/90 dark:bg-navy-900/90 border border-slate-200 dark:border-slate-700/80 focus:border-sky-500 dark:focus:border-brand-500 focus:bg-white dark:focus:bg-navy-900 focus:ring-2 focus:ring-sky-500/20 dark:focus:ring-brand-500/20 rounded-xl px-4 py-2.5 pl-11 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 transition-all outline-none"
+              className="w-full bg-slate-100/90 dark:bg-navy-900/90 border border-slate-200 dark:border-slate-700/80 focus:border-sky-500 dark:focus:border-brand-500 focus:bg-white dark:focus:bg-navy-900 focus:ring-2 focus:ring-sky-500/20 dark:focus:ring-brand-500/20 rounded-md px-4 py-2.5 pl-11 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 transition-all outline-none"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
             <button
               type="submit"
-              className="absolute right-2 top-2 px-3.5 py-1 bg-sky-600 hover:bg-sky-500 dark:bg-brand-500 dark:hover:bg-brand-400 text-white dark:text-navy-950 text-xs font-bold rounded-lg shadow-sm transition-all"
+              className="absolute right-2 top-2 px-3.5 py-1 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 focus-visible:ring-2 focus-visible:ring-sky-400 text-white text-xs font-bold rounded-md shadow-sm transition-all"
             >
               Search
             </button>

@@ -7,6 +7,12 @@ import { Building2, Bell, Receipt, User, ShieldCheck, LogOut, ExternalLink, Menu
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import NotificationDropdown from './NotificationDropdown';
 import { useAdminSidebar } from './AdminSidebarContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/radix';
 
 export default function AdminHeader() {
   const router = useRouter();
@@ -58,33 +64,50 @@ export default function AdminHeader() {
 
         {/* Mobile Header Brand Display (when sidebar is closed) */}
         <div className="flex lg:hidden items-center min-w-0">
-          <img
-            src="/images/logo.png"
-            alt="CORENIX"
-            className="h-10 w-auto object-contain dark:hidden"
-          />
-          <img
-            src="/images/logo-dark.png"
-            alt="CORENIX"
-            className="h-10 w-auto object-contain hidden dark:block brightness-0 invert"
-          />
+          <span className="text-xl font-black tracking-tight text-slate-950 dark:text-white">
+            CORENIX
+          </span>
         </div>
 
         {/* Branch Context Selector (Desktop & Tablet) */}
-        <div className="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/80 text-xs">
+        <div className="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700/80 text-xs">
           <Building2 className="w-4 h-4 text-sky-600 dark:text-cyan-400 shrink-0" />
           <span className="text-slate-500 dark:text-slate-400 font-semibold hidden lg:inline">Active Location:</span>
-          <select
-            value={activeBranch}
-            onChange={(e) => setActiveBranch(e.target.value)}
-            className="bg-transparent text-slate-900 dark:text-white font-bold outline-none cursor-pointer text-xs"
-          >
-            <option value="all" className="bg-white text-slate-900 dark:bg-navy-900 dark:text-white">All Locations (Head Office)</option>
-            <option value="shop1" className="bg-white text-slate-900 dark:bg-navy-900 dark:text-white">Shop 1 (Uttara)</option>
-            <option value="shop2" className="bg-white text-slate-900 dark:bg-navy-900 dark:text-white">Shop 2 (Dhanmondi)</option>
-            <option value="wh" className="bg-white text-slate-900 dark:bg-navy-900 dark:text-white">Main Warehouse</option>
-            <option value="rma" className="bg-white text-slate-900 dark:bg-navy-900 dark:text-white">RMA Service Hub</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2 text-slate-900 dark:text-white font-bold outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                aria-label="Select active location"
+              >
+                {[
+                  ['all', 'All Locations (Head Office)'],
+                  ['shop1', 'Shop 1 (Uttara)'],
+                  ['shop2', 'Shop 2 (Dhanmondi)'],
+                  ['wh', 'Main Warehouse'],
+                  ['rma', 'RMA Service Hub'],
+                ].find(([value]) => value === activeBranch)?.[1]}
+                <span aria-hidden="true">⌄</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {[
+                ['all', 'All Locations (Head Office)'],
+                ['shop1', 'Shop 1 (Uttara)'],
+                ['shop2', 'Shop 2 (Dhanmondi)'],
+                ['wh', 'Main Warehouse'],
+                ['rma', 'RMA Service Hub'],
+              ].map(([value, label]) => (
+                <DropdownMenuItem
+                  key={value}
+                  onSelect={() => setActiveBranch(value)}
+                  className={activeBranch === value ? 'bg-slate-100 font-bold dark:bg-slate-800' : ''}
+                >
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

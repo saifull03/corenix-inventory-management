@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -49,7 +49,8 @@
   --grey-900: #161A23;
 
   /* Typography Fonts */
-  --font-ui: "Instrument Sans", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui: "DM Sans", "Hind Siliguri", sans-serif;
+  --font-display: "DM Serif Display", Georgia, serif;
   --font-bn: "Hind Siliguri", "Noto Sans Bengali", "Instrument Sans", sans-serif;
 
   /* Radius scale */
@@ -66,27 +67,27 @@
   --ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* Light Theme Semantic Tokens */
-  --bg: #F3F5F8;
-  --surface: #FFFFFF;
-  --surface-2: #E9EDF2;
-  --surface-img: #FFFFFF;
-  --surface-inverse: #161A23;
-  --border: #DCE1E8;
-  --border-strong: #C3CAD5;
-  --text: #161A23;
-  --text-muted: #4B5465;
-  --text-subtle: #687284;
+  --bg: #f3f1ec;
+  --surface: #fbfaf7;
+  --surface-2: #e7e3da;
+  --surface-img: #fbfaf7;
+  --surface-inverse: #161816;
+  --border: #d7d2c8;
+  --border-strong: #bcb5a8;
+  --text: #1b1d1b;
+  --text-muted: #5e625c;
+  --text-subtle: #7d8178;
   --text-inverse: #FFFFFF;
   --text-disabled: #959FAF;
-  --primary: #2340D0;
-  --primary-hover: #1B32A8;
-  --primary-active: #172A85;
-  --primary-soft: #EEF1FD;
+  --primary: #6d7f76;
+  --primary-hover: #596a62;
+  --primary-active: #46564f;
+  --primary-soft: #e4ebe6;
   --primary-on: #FFFFFF;
-  --link: #2340D0;
-  --accent: #B8400A;
-  --accent-hover: #93340D;
-  --accent-soft: #FFF4EC;
+  --link: #596a62;
+  --accent: #a27b48;
+  --accent-hover: #87643b;
+  --accent-soft: #f1e8da;
   --accent-on: #FFFFFF;
   --sticker: #EE5F12;
   --danger: #C42B1C;
@@ -127,27 +128,27 @@
 [data-theme="dark"],
 .theme-dark,
 .dark {
-  --bg: #0E1426;
-  --surface: #151C31;
-  --surface-2: #1D2540;
-  --surface-img: #F3F5F8;
-  --surface-inverse: #E8ECF5;
-  --border: #2A3352;
-  --border-strong: #3A4566;
-  --text: #E8ECF5;
-  --text-muted: #A9B2C7;
-  --text-subtle: #8790A8;
-  --text-inverse: #0E1426;
-  --text-disabled: #566080;
-  --primary: #4F6BEA;
-  --primary-hover: #3F5BDF;
-  --primary-active: #2F4BD2;
-  --primary-soft: rgba(79, 107, 234, 0.18);
+  --bg: #101210;
+  --surface: #181b18;
+  --surface-2: #222722;
+  --surface-img: #f3f1ec;
+  --surface-inverse: #f1eee7;
+  --border: #30362f;
+  --border-strong: #485047;
+  --text: #eeece5;
+  --text-muted: #b1b5ab;
+  --text-subtle: #858b82;
+  --text-inverse: #101210;
+  --text-disabled: #626a60;
+  --primary: #9baa9d;
+  --primary-hover: #b5c2b5;
+  --primary-active: #7d8f81;
+  --primary-soft: rgba(155, 170, 157, 0.14);
   --primary-on: #FFFFFF;
-  --link: #9FB2FF;
-  --accent: #FF8A47;
-  --accent-hover: #F97A33;
-  --accent-soft: rgba(255, 138, 71, 0.14);
+  --link: #c2d0c4;
+  --accent: #d0a76b;
+  --accent-hover: #e0bb83;
+  --accent-soft: rgba(208, 167, 107, 0.14);
   --accent-on: #1E0A00;
   --sticker: #FF8A47;
   --danger: #D93A2B;
@@ -252,6 +253,17 @@ body {
   transition: background-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
 }
 
+h1, h2, h3, .t-display, .t-h1, .t-h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+button, a, input, select, textarea {
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
 .bn, :lang(bn) {
   font-family: var(--font-bn) !important;
   line-height: 1.65;
@@ -269,6 +281,17 @@ a:hover {
 button, input, select, textarea {
   font: inherit;
   color: inherit;
+}
+
+/* Keep the interface architectural rather than overly pillowy. */
+.rounded-2xl,
+.rounded-3xl {
+  border-radius: 8px !important;
+}
+
+.shadow-2xl,
+.shadow-xl {
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.6) !important;
 }
 
 :focus-visible {

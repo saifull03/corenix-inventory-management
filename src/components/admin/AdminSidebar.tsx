@@ -174,16 +174,9 @@ export default function AdminSidebar() {
           {/* Brand Header & Toggle Controls */}
           <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/50 dark:bg-navy-950/40">
             <Link href="/admin" onClick={handleLinkClick} className="flex items-center gap-2 min-w-0 group">
-              <img
-                src="/images/logo.png"
-                alt="CORENIX"
-                className="h-11 w-auto object-contain dark:hidden group-hover:scale-105 transition-transform"
-              />
-              <img
-                src="/images/logo-dark.png"
-                alt="CORENIX"
-                className="h-11 w-auto object-contain hidden dark:block brightness-0 invert group-hover:scale-105 transition-transform"
-              />
+              <span className="text-2xl font-black tracking-tight text-slate-950 dark:text-white group-hover:scale-105 transition-transform">
+                CORENIX
+              </span>
               <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 dark:bg-sky-950/80 dark:text-cyan-300 border border-sky-200 dark:border-sky-800 tracking-wider">
                 Hub
               </span>

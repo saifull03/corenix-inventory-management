@@ -1400,15 +1400,11 @@ export default function PcBuilderPage() {
 
               {/* Printable Quotation Content (Engineered for Exact 1-Page A4 Precision) */}
               <div id="quotation-printable" className="p-6 sm:p-8 overflow-y-auto flex-1 bg-white text-slate-900 font-sans text-xs leading-normal">
-                {/* Quotation Header with Brand Logo & Company Info */}
+                {/* Quotation Header with Brand Name & Company Info */}
                 <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3 mb-3">
                   <div>
                     <div className="flex items-center gap-2.5 mb-1.5">
-                      <img
-                        src="/images/logo.png"
-                        alt="CORENIX"
-                        className="h-8 w-auto object-contain"
-                      />
+                      <span className="text-xl font-black tracking-tight text-slate-950">CORENIX</span>
                       <span className="text-sm font-bold text-slate-300">|</span>
                       <h2 className="text-xl font-black tracking-tight text-slate-950">
                         COMPUTERS & TECH LTD.

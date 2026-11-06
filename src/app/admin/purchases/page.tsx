@@ -4064,11 +4064,7 @@ function PurchasesContent() {
                 <div className="flex items-start justify-between border-b-2 border-slate-900 pb-5">
                   <div>
                     <div className="flex items-center gap-3">
-                      <img
-                        src="/images/logo.png"
-                        alt="CORENIX"
-                        className="h-8 w-auto object-contain"
-                      />
+                      <span className="text-xl font-black tracking-tight text-slate-900">CORENIX</span>
                       <div>
                         <h1 className="text-xl font-black tracking-tight text-slate-900 uppercase">
                           ENTERPRISE

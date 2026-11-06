@@ -27,7 +27,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=Hind+Siliguri:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <script
@@ -49,7 +49,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-100 min-h-screen selection:bg-sky-500 selection:text-white font-sans antialiased transition-colors duration-200">
+      <body className="bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-100 min-h-screen selection:bg-stone-500 selection:text-white font-sans antialiased transition-colors duration-200">
         <ThemeProvider>
           <CartProvider>
             {children}
@@ -59,4 +59,3 @@ export default function RootLayout({
     </html>
   );
 }
-
