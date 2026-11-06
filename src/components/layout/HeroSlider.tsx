@@ -201,13 +201,12 @@ export default function HeroSlider({
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 py-4 sm:py-5">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-stretch">
+      <div className="grid grid-cols-1 items-stretch gap-3.5 sm:gap-4 lg:grid-cols-12">
         {/* ========================================================================= */}
         {/* LEFT HALF / AREA: INTERACTIVE SLIDER CAROUSEL (Approx. 65% width)        */}
         {/* ========================================================================= */}
         <div
-          className="lg:col-span-7 xl:col-span-8 rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-lg bg-navy-950 border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between"
-          style={{ minHeight: '440px' }}
+          className="relative flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/60 bg-navy-950 shadow-lg sm:rounded-3xl dark:border-slate-800/80 lg:col-span-7 lg:aspect-[16/9] xl:col-span-8"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={handleTouchStart}
@@ -224,11 +223,17 @@ export default function HeroSlider({
             >
               {/* Background image: Crystal Clear, 100% Brightness */}
               <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                className="absolute inset-[-2px] bg-cover bg-center bg-no-repeat"
                 style={{
                   backgroundImage: `url(${b.image_url})`,
-                  transition: 'transform 8s ease-out',
-                  transform: i === current ? 'scale(1.02)' : 'scale(1.06)',
+                  animation: i === current
+                    ? `${i % 2 === 0 ? 'heroZoomIn' : 'heroZoomOut'} ${SLIDE_DURATION}ms ease-out both`
+                    : 'none',
+                  transformOrigin: 'center center',
+                  willChange: i === current ? 'transform' : 'auto',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  contain: 'paint',
                 }}
               />
               {/* Ultra light subtle vignette only for soft text legibility, NO heavy black blur */}
@@ -252,8 +257,7 @@ export default function HeroSlider({
               className="my-auto py-6 max-w-xl"
               style={{
                 opacity: isTransitioning ? 0 : 1,
-                transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
-                transition: 'opacity 0.35s ease, transform 0.35s ease',
+                transition: 'opacity 0.35s ease',
               }}
             >
               {/* Subtitle */}
@@ -355,12 +359,12 @@ export default function HeroSlider({
         {/* ========================================================================= */}
         {/* RIGHT HALF / AREA: 2 COLLAGE PROMOTIONAL PICTURES (LINK ONLY, NO BLUR)   */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-5 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-col gap-3.5 sm:gap-4">
+        <div className="grid min-h-0 grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:flex lg:flex-col xl:col-span-4">
           {displayCollageBanners.map((promo, idx) => (
             <Link
               key={promo.id || idx}
               href={promo.link_url || '/products'}
-              className="group relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800/90 shadow-md bg-navy-950 transition-all duration-300 hover:shadow-xl hover:border-sky-500/50 flex-1 min-h-[190px] sm:min-h-[210px] lg:min-h-0 block"
+              className="group relative block min-h-[190px] flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:min-h-[210px] sm:rounded-3xl lg:min-h-0 dark:border-slate-800/90"
             >
               {/* 100% Crisp, Clean Picture - NO TEXT, NO BLACK BLUR */}
               <div
@@ -382,6 +386,24 @@ export default function HeroSlider({
           to {
             transform: scaleX(1);
             transform-origin: left;
+          }
+        }
+
+        @keyframes heroZoomIn {
+          from {
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+          to {
+            transform: translate3d(0, 0, 0) scale(1.04);
+          }
+        }
+
+        @keyframes heroZoomOut {
+          from {
+            transform: translate3d(0, 0, 0) scale(1.04);
+          }
+          to {
+            transform: translate3d(0, 0, 0) scale(1);
           }
         }
       `}</style>
