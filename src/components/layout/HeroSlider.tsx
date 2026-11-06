@@ -206,7 +206,7 @@ export default function HeroSlider({
         {/* LEFT HALF / AREA: INTERACTIVE SLIDER CAROUSEL (Approx. 65% width)        */}
         {/* ========================================================================= */}
         <div
-          className="relative flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/60 bg-navy-950 shadow-lg sm:rounded-3xl dark:border-slate-800/80 lg:col-span-7 lg:aspect-[16/9] xl:col-span-8"
+          className="relative flex aspect-[4/3] min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/60 bg-navy-950 shadow-lg sm:aspect-[16/9] sm:rounded-3xl dark:border-slate-800/80 lg:col-span-7 xl:col-span-8"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={handleTouchStart}
@@ -242,11 +242,11 @@ export default function HeroSlider({
           ))}
 
           {/* Slide Content */}
-          <div className="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-between h-full flex-1">
+          <div className="relative z-10 flex h-full flex-1 flex-col justify-between p-5 sm:p-10 md:p-12">
             {/* Top Slide Badge */}
             <div className="flex items-center">
               {banner.badge_text && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-bold backdrop-blur-md shadow-xs">
+                <div className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-sky-500/30 bg-sky-500/20 px-3 py-1 text-xs font-bold text-sky-300 shadow-xs backdrop-blur-md">
                   <span>{banner.badge_text}</span>
                 </div>
               )}
@@ -254,7 +254,7 @@ export default function HeroSlider({
 
             {/* Middle Main Titles */}
             <div
-              className="my-auto py-6 max-w-xl"
+              className="my-auto max-w-xl py-4 sm:py-6"
               style={{
                 opacity: isTransitioning ? 0 : 1,
                 transition: 'opacity 0.35s ease',
@@ -264,29 +264,29 @@ export default function HeroSlider({
               {banner.subtitle && (
                 <div className="flex items-center gap-2 mb-2.5">
                   <span className="w-1.5 h-4 bg-sky-400 rounded-full shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-sky-300 drop-shadow-md">
+                  <span className="truncate text-[10px] font-bold uppercase tracking-wider text-sky-300 drop-shadow-md sm:text-sm">
                     {banner.subtitle}
                   </span>
                 </div>
               )}
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15] mb-3 drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)]">
+              <h1 className="mb-2 text-xl font-black leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)] sm:mb-3 sm:text-3xl sm:leading-[1.15] md:text-4xl lg:text-5xl">
                 {banner.title}
               </h1>
 
               {/* Description */}
               {banner.description && (
-                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-lg drop-shadow-md line-clamp-3">
+                <p className="hidden max-w-lg text-xs leading-relaxed text-slate-200 drop-shadow-md sm:line-clamp-3 sm:block sm:text-sm">
                   {banner.description}
                 </p>
               )}
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 mt-6">
+              <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-6 sm:gap-3">
                 <Link
                   href={banner.link_url}
-                  className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-sky-500/30 transition-all hover:scale-102 active:scale-98"
+                  className="flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/30 transition-colors hover:bg-sky-400 active:bg-sky-600 sm:rounded-2xl sm:px-6 sm:py-3 sm:text-sm"
                 >
                   <span>{banner.button_text || 'Shop Now'}</span>
                 </Link>
@@ -294,7 +294,7 @@ export default function HeroSlider({
                 {banner.cta2_text && banner.cta2_link && (
                   <Link
                     href={banner.cta2_link}
-                    className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-white/30 hover:border-white/60 text-white font-bold text-xs sm:text-sm hover:bg-white/10 flex items-center gap-1.5 transition-all backdrop-blur-md"
+                    className="flex items-center gap-1.5 rounded-xl border border-white/30 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:border-white/60 hover:bg-white/10 sm:rounded-2xl sm:px-5 sm:py-3 sm:text-sm"
                   >
                     <span>{banner.cta2_text}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -310,11 +310,9 @@ export default function HeroSlider({
                   <button
                     key={i}
                     onClick={() => goTo(i)}
-                    className="relative overflow-hidden transition-all duration-300 focus:outline-none cursor-pointer"
+                    className="relative h-1 cursor-pointer overflow-hidden rounded transition-all duration-300 focus:outline-none"
                     style={{
-                      height: '4px',
                       width: i === current ? '36px' : '14px',
-                      borderRadius: '2px',
                       backgroundColor: i === current ? '#38BDF8' : 'rgba(255,255,255,0.3)',
                     }}
                     aria-label={`Go to slide ${i + 1}`}
@@ -339,7 +337,7 @@ export default function HeroSlider({
             <>
               <button
                 onClick={prev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 focus:outline-none cursor-pointer"
+                className="absolute left-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/80 focus:outline-none sm:left-3 sm:h-9 sm:w-9"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5" />
@@ -347,7 +345,7 @@ export default function HeroSlider({
 
               <button
                 onClick={next}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 focus:outline-none cursor-pointer"
+                className="absolute right-2 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/80 focus:outline-none sm:right-3 sm:h-9 sm:w-9"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5" />
@@ -364,7 +362,7 @@ export default function HeroSlider({
             <Link
               key={promo.id || idx}
               href={promo.link_url || '/products'}
-              className="group relative block min-h-[190px] flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:min-h-[210px] sm:rounded-3xl lg:min-h-0 dark:border-slate-800/90"
+              className="group relative block aspect-[16/9] min-h-0 flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:min-h-[210px] sm:rounded-3xl lg:min-h-0 dark:border-slate-800/90"
             >
               {/* 100% Crisp, Clean Picture - NO TEXT, NO BLACK BLUR */}
               <div

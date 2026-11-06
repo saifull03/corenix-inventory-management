@@ -78,7 +78,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <article className="group pcard bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden flex flex-col hover:-translate-y-0.5 hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
+    <article className="group pcard flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_3px_12px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_8px_20px_rgba(15,23,42,0.14)] dark:border-slate-700/80 dark:bg-navy-900 dark:shadow-[0_3px_12px_rgba(0,0,0,0.2)] dark:hover:border-slate-600 dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.3)]">
       <div className="media relative h-56 bg-white dark:bg-slate-100 p-5 flex items-center justify-center overflow-hidden">
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start pointer-events-none">
           {isEmiEligible && (
