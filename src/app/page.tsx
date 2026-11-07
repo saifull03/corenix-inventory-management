@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import ProductCard from '@/components/products/ProductCard';
 import HeroSlider from '@/components/layout/HeroSlider';
 import PromotionPopup from '@/components/layout/PromotionPopup';
+import AnnouncementMarquee from '@/components/layout/AnnouncementMarquee';
 import { query } from '@/lib/db';
 import { Product, Category, Brand } from '@/lib/types';
 import { getLandingProducts } from '@/lib/landing-products';
@@ -183,6 +184,8 @@ export default async function HomePage() {
             initialCollageBanners={collageBanners ?? []}
           />
         </section>
+
+        <AnnouncementMarquee />
 
         {/* TRUST BADGES STRIP */}
         <div className="bg-white dark:bg-navy-900 border-b border-slate-200/80 dark:border-slate-800/80">
