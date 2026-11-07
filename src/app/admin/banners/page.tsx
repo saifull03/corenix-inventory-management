@@ -60,7 +60,7 @@ const EMPTY: Omit<Banner, 'id'> = {
   description: '',
   image_url: '',
   link_url: '',
-  button_text: 'Shop Now',
+  button_text: '',
   cta2_text: '',
   cta2_link: '',
   badge_text: '',
@@ -126,7 +126,7 @@ export default function AdminBannersPage() {
       description: b.description || '',
       image_url: b.image_url || '',
       link_url: b.link_url || '',
-      button_text: b.button_text || 'Shop Now',
+      button_text: b.button_text || '',
       cta2_text: b.cta2_text || '',
       cta2_link: b.cta2_link || '',
       badge_text: b.badge_text || '',
@@ -192,7 +192,7 @@ export default function AdminBannersPage() {
       return;
     }
     const isPic = isPictureBanner(form.position);
-    if (!isPic && !form.title.trim()) {
+    if (form.position === 'marquee' && !form.title.trim()) {
       showToast('error', 'Title is required.');
       return;
     }
@@ -200,7 +200,7 @@ export default function AdminBannersPage() {
     try {
       const payload = {
         id: editingBanner?.id,
-        title: form.title.trim() || (isPic ? `${form.position} Picture Banner` : 'Untitled Banner'),
+        title: form.title.trim(),
         subtitle: form.subtitle,
         description: form.description,
         imageUrl: form.image_url.trim(),
@@ -693,11 +693,10 @@ export default function AdminBannersPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                        Title *
+                        Title (Optional)
                       </label>
                       <input
                         type="text"
-                        required
                         value={form.title}
                         onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                         placeholder="Engineered for Maximum Performance"
@@ -761,21 +760,8 @@ export default function AdminBannersPage() {
                     </div>
                   </div>
 
-                  {/* CTAs */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                        Primary CTA Text
-                      </label>
-                      <input
-                        type="text"
-                        value={form.button_text}
-                        onChange={e => setForm(f => ({ ...f, button_text: e.target.value }))}
-                        placeholder="Shop Now"
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-sky-500 dark:focus:border-sky-400 transition-colors"
-                      />
-                    </div>
-                    <div>
+                  {/* Secondary CTA */}
+                  <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                         Secondary CTA Text
                       </label>
@@ -787,8 +773,6 @@ export default function AdminBannersPage() {
                         className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-sky-500 dark:focus:border-sky-400 transition-colors"
                       />
                     </div>
-                  </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">

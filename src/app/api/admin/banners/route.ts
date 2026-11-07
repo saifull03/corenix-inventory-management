@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       description = '',
       imageUrl,
       linkUrl,
-      buttonText = 'Shop Now',
+      buttonText = '',
       cta2Text = '',
       cta2Link = '',
       badgeText = '',
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     }
 
     const isPictureOnly = ['hero_collage', 'before_laptops', 'after_laptops', 'after_accessories', 'popup'].includes(position);
-    const safeTitle = title?.trim() || (isPictureOnly ? `${position} Picture Banner` : 'Untitled Banner');
+    const safeTitle = title?.trim() || '';
     const safeLinkUrl = linkUrl?.trim() || '/products';
 
     const result = await query<any>(
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         description?.trim() || null,
         imageUrl?.trim() || '',
         safeLinkUrl,
-        buttonText?.trim() || 'Shop Now',
+        buttonText?.trim() || '',
         cta2Text?.trim() || null,
         cta2Link?.trim() || null,
         badgeText?.trim() || null,
@@ -159,7 +159,7 @@ export async function PATCH(req: NextRequest) {
         description?.trim() || null,
         imageUrl?.trim(),
         linkUrl?.trim(),
-        buttonText?.trim() || 'Shop Now',
+        buttonText?.trim() || '',
         cta2Text?.trim() || null,
         cta2Link?.trim() || null,
         badgeText?.trim() || null,

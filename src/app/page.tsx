@@ -389,18 +389,20 @@ export default async function HomePage() {
         </section>
 
         {/* 6. ONE WIDE BANNER (AFTER ACCESSORIES) */}
-        <section className="py-8 max-w-7xl mx-auto px-4">
-          <Link
-            href={afterAccessoriesBanners[0]?.link_url || '/rma'}
-            className="block overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.005] border border-slate-200/70 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
-          >
-            <img
-              src={afterAccessoriesBanners[0]?.image_url || '/uploads/banners/banner_1790852103647_6478.png'}
-              alt={afterAccessoriesBanners[0]?.title || 'Official Warranty Hub Banner'}
-              className="w-full h-auto max-h-[300px] object-cover rounded-2xl sm:rounded-3xl"
-            />
-          </Link>
-        </section>
+        {afterAccessoriesBanners[0] && (
+          <section className="py-8 max-w-7xl mx-auto px-4">
+            <Link
+              href={afterAccessoriesBanners[0].link_url || '/rma'}
+              className="block overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.005] border border-slate-200/70 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
+            >
+              <img
+                src={afterAccessoriesBanners[0].image_url}
+                alt={afterAccessoriesBanners[0].title || 'Promotional banner'}
+                className="w-full h-auto max-h-[300px] object-cover rounded-2xl sm:rounded-3xl"
+              />
+            </Link>
+          </section>
+        )}
 
         {/* INTERACTIVE PC BUILDER CALLOUT BANNER */}
         <section className="py-16 max-w-7xl mx-auto px-4">

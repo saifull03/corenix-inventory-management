@@ -114,7 +114,7 @@ export default function HeroSlider({
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const progressRef = useRef<NodeJS.Timeout | null>(null);
-  const SLIDE_DURATION = 5000;
+  const SLIDE_DURATION = 3000;
 
   // Auto-fetch if no initial banners provided
   useEffect(() => {
@@ -284,13 +284,6 @@ export default function HeroSlider({
 
               {/* CTAs */}
               <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-6 sm:gap-3">
-                <Link
-                  href={banner.link_url}
-                  className="flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/30 transition-colors hover:bg-sky-400 active:bg-sky-600 sm:rounded-2xl sm:px-6 sm:py-3 sm:text-sm"
-                >
-                  <span>{banner.button_text || 'Shop Now'}</span>
-                </Link>
-
                 {banner.cta2_text && banner.cta2_link && (
                   <Link
                     href={banner.cta2_link}
