@@ -43,6 +43,9 @@ export default async function HomePage() {
   const afterAccessoriesBanners = allBanners?.filter(b => b.position === 'after_accessories') || [];
   const promotionBanners = allBanners?.filter(b => b.position === 'popup') || [];
   const promotionBanner = promotionBanners[0];
+  const marqueeMessages = allBanners
+    ?.filter(b => b.position === 'marquee' && b.title?.trim())
+    .map(b => b.title.trim()) || [];
 
   const categories = await query<Category[]>(
     `SELECT id, name, slug, short_desc
@@ -185,7 +188,7 @@ export default async function HomePage() {
           />
         </section>
 
-        <AnnouncementMarquee />
+        <AnnouncementMarquee messages={marqueeMessages} />
 
         {/* TRUST BADGES STRIP */}
         <div className="bg-white dark:bg-navy-900 border-b border-slate-200/80 dark:border-slate-800/80">

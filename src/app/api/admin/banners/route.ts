@@ -48,9 +48,15 @@ export async function POST(req: NextRequest) {
       isActive = true,
     } = body;
 
-    if (!imageUrl) {
+    if (position !== 'marquee' && !imageUrl) {
       return NextResponse.json(
         { success: false, error: 'Banner Image is required.' },
+        { status: 400 }
+      );
+    }
+    if (position === 'marquee' && !title?.trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Marquee announcement text is required.' },
         { status: 400 }
       );
     }
@@ -69,7 +75,7 @@ export async function POST(req: NextRequest) {
         safeTitle,
         subtitle?.trim() || null,
         description?.trim() || null,
-        imageUrl.trim(),
+        imageUrl?.trim() || '',
         safeLinkUrl,
         buttonText?.trim() || 'Shop Now',
         cta2Text?.trim() || null,
@@ -112,14 +118,14 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Banner not found.' }, { status: 404 });
     }
 
-    // Handle is_active toggle
-    if ('isActive' in fields) {
+    // Handle the dedicated active toggle request without swallowing full edits.
+    if ('isActive' in fields && Object.keys(fields).length === 1) {
       await query(`UPDATE banners SET is_active = ? WHERE id = ?`, [fields.isActive ? 1 : 0, id]);
       return NextResponse.json({ success: true, message: `Banner ${fields.isActive ? 'activated' : 'deactivated'}` });
     }
 
-    // Handle order update
-    if ('orderIndex' in fields) {
+    // Handle the dedicated order update request without swallowing full edits.
+    if ('orderIndex' in fields && Object.keys(fields).length === 1) {
       await query(`UPDATE banners SET order_index = ? WHERE id = ?`, [fields.orderIndex, id]);
       return NextResponse.json({ success: true, message: 'Order updated' });
     }

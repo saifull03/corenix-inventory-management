@@ -44,6 +44,7 @@ const POSITIONS_CONFIG = [
   { value: 'after_laptops', label: '2 Banners (After Gaming Laptops)', shortLabel: 'After Laptops', isPicture: true, guide: 'Recommended size: ~800 × 380px. Pure picture banner side-by-side.' },
   { value: 'after_accessories', label: '1 Wide Banner (After Accessories)', shortLabel: 'After Accessories', isPicture: true, guide: 'Recommended size: ~1400 × 350px. Pure clickable full-width picture banner.' },
   { value: 'popup', label: 'Promotion Popup', shortLabel: 'Popup Ad', isPicture: true, guide: 'Recommended size: ~900 × 600px. This image opens in a centered popup on the homepage.' },
+  { value: 'marquee', label: 'Marquee Announcement', shortLabel: 'Marquee', isPicture: false, guide: 'Enter the announcement text in the title field. Active announcements scroll beneath the homepage banner.' },
   { value: 'sidebar', label: 'Sidebar Banner', shortLabel: 'Sidebar', isPicture: false, guide: 'Recommended size: ~400 × 600px.' },
   { value: 'footer', label: 'Footer Banner', shortLabel: 'Footer', isPicture: false, guide: 'Recommended size: ~1200 × 300px.' },
 ];
@@ -185,7 +186,8 @@ export default function AdminBannersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.image_url.trim()) {
+    const isMarquee = form.position === 'marquee';
+    if (!isMarquee && !form.image_url.trim()) {
       showToast('error', 'Banner image is required.');
       return;
     }
@@ -542,7 +544,7 @@ export default function AdminBannersPage() {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               {/* Image Upload Zone */}
-              <div>
+              {form.position !== 'marquee' && <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">
                   Banner Image *
                 </label>
@@ -626,7 +628,7 @@ export default function AdminBannersPage() {
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-medium placeholder:text-slate-400 focus:outline-none focus:border-sky-500 dark:focus:border-sky-400 transition-colors"
                   />
                 </div>
-              </div>
+              </div>}
 
               {/* Position selector */}
               <div>
