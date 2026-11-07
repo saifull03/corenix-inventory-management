@@ -8,7 +8,7 @@ const dbConfig = {
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'corenix_db',
 };
-
+//kk
 const JWT_SECRET = process.env.JWT_SECRET || 'corenix_super_secure_jwt_token_key_2026_enterprise';
 
 async function runTransferTestSuite() {

@@ -157,7 +157,7 @@ export default function PcBuilderPage() {
 
   // Fetch PC Builder eligible products from database
   useEffect(() => {
-    fetch('/api/products?limit=350')
+    fetch('/api/products?pc_builder=1&limit=5000')
       .then(res => res.json())
       .then(data => {
         if (data.products && Array.isArray(data.products)) {
