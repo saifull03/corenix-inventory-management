@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isPictureOnly = ['hero_collage', 'before_laptops', 'after_laptops', 'after_accessories'].includes(position);
+    const isPictureOnly = ['hero_collage', 'before_laptops', 'after_laptops', 'after_accessories', 'popup'].includes(position);
     const safeTitle = title?.trim() || (isPictureOnly ? `${position} Picture Banner` : 'Untitled Banner');
     const safeLinkUrl = linkUrl?.trim() || '/products';
 

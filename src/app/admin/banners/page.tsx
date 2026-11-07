@@ -43,12 +43,13 @@ const POSITIONS_CONFIG = [
   { value: 'before_laptops', label: '2 Banners (Before Gaming Laptops)', shortLabel: 'Before Laptops', isPicture: true, guide: 'Recommended size: ~800 × 380px. Pure picture banner side-by-side.' },
   { value: 'after_laptops', label: '2 Banners (After Gaming Laptops)', shortLabel: 'After Laptops', isPicture: true, guide: 'Recommended size: ~800 × 380px. Pure picture banner side-by-side.' },
   { value: 'after_accessories', label: '1 Wide Banner (After Accessories)', shortLabel: 'After Accessories', isPicture: true, guide: 'Recommended size: ~1400 × 350px. Pure clickable full-width picture banner.' },
+  { value: 'popup', label: 'Promotion Popup', shortLabel: 'Popup Ad', isPicture: true, guide: 'Recommended size: ~900 × 600px. This image opens in a centered popup on the homepage.' },
   { value: 'sidebar', label: 'Sidebar Banner', shortLabel: 'Sidebar', isPicture: false, guide: 'Recommended size: ~400 × 600px.' },
   { value: 'footer', label: 'Footer Banner', shortLabel: 'Footer', isPicture: false, guide: 'Recommended size: ~1200 × 300px.' },
 ];
 
 const isPictureBanner = (pos: string) =>
-  ['hero_collage', 'before_laptops', 'after_laptops', 'after_accessories'].includes(pos);
+  ['hero_collage', 'before_laptops', 'after_laptops', 'after_accessories', 'popup'].includes(pos);
 
 const POSITIONS = POSITIONS_CONFIG.map(p => p.value);
 

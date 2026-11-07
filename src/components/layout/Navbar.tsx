@@ -17,7 +17,6 @@ import {
   BatteryCharging,
   CreditCard
 } from 'lucide-react';
-import ThemeToggle from '@/components/theme/ThemeToggle';
 import CategoryNav from '@/components/layout/CategoryNav';
 import { MEGA_CATEGORIES } from '@/lib/categories-data';
 import { useCart } from '@/context/CartContext';
@@ -268,9 +267,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Theme Toggle (Dark / Light) */}
-          <ThemeToggle />
-
           {/* Account */}
           <Link
             href="/account"
@@ -429,7 +425,6 @@ export default function Navbar() {
             <Link href="/stores" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-sky-600 dark:hover:text-brand-400">Showrooms</Link>
             <Link href="/rma" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-sky-600 dark:hover:text-brand-400">RMA Hub</Link>
             <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-sky-600 dark:text-brand-400 font-semibold">Admin</Link>
-            <ThemeToggle />
           </div>
         </div>
       )}

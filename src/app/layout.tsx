@@ -22,28 +22,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark font-sans" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" className="light font-sans" data-theme="light" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('corenix-theme') || 'dark';
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                  document.documentElement.classList.remove('light');
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                  document.documentElement.classList.add('light');
-                  document.documentElement.setAttribute('data-theme', 'light');
-                }
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                document.documentElement.setAttribute('data-theme', 'light');
               } catch (e) {}
             `,
           }}
         />
       </head>
-      <body className="bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-100 min-h-screen selection:bg-stone-500 selection:text-white font-sans antialiased transition-colors duration-200">
+      <body className="bg-slate-50 text-slate-800 min-h-screen selection:bg-stone-500 selection:text-white font-sans antialiased transition-colors duration-200">
         <ThemeProvider>
           <CartProvider>
             {children}

@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ProductCard from '@/components/products/ProductCard';
 import HeroSlider from '@/components/layout/HeroSlider';
+import PromotionPopup from '@/components/layout/PromotionPopup';
 import { query } from '@/lib/db';
 import { Product, Category, Brand } from '@/lib/types';
 import { getLandingProducts } from '@/lib/landing-products';
@@ -39,6 +40,8 @@ export default async function HomePage() {
   const beforeLaptopBanners = allBanners?.filter(b => b.position === 'before_laptops') || [];
   const afterLaptopBanners = allBanners?.filter(b => b.position === 'after_laptops') || [];
   const afterAccessoriesBanners = allBanners?.filter(b => b.position === 'after_accessories') || [];
+  const promotionBanners = allBanners?.filter(b => b.position === 'popup') || [];
+  const promotionBanner = promotionBanners[0];
 
   const categories = await query<Category[]>(
     `SELECT id, name, slug, short_desc
@@ -93,7 +96,7 @@ export default async function HomePage() {
   );
 
   // Fallback to top products if category count is small
-  const gamingLaptops = rawLaptops && rawLaptops.length > 0 ? rawLaptops : featuredProducts.slice(0, 4);
+  const gamingLaptops = rawLaptops && rawLaptops.length >= 4 ? rawLaptops : featuredProducts.slice(0, 4);
 
   // 3. Fetch Gaming Peripherals & Accessories
   const rawAccessories = await query<Product[]>(
@@ -128,16 +131,16 @@ export default async function HomePage() {
      LIMIT 8`
   );
 
-  const accessoryProducts = rawAccessories && rawAccessories.length > 0 ? rawAccessories : featuredProducts.slice(2, 6);
+  const accessoryProducts = rawAccessories && rawAccessories.length >= 4 ? rawAccessories : featuredProducts.slice(2, 6);
 
   const [managedFeatured, managedLaptops, managedAccessories] = await Promise.all([
     getLandingProducts('featured', 8),
     getLandingProducts('gaming_laptops', 8),
     getLandingProducts('accessories', 8),
   ]);
-  const landingFeaturedProducts = managedFeatured;
-  const landingGamingLaptops = managedLaptops;
-  const landingAccessories = managedAccessories;
+  const landingFeaturedProducts = managedFeatured.length >= 4 ? managedFeatured : featuredProducts;
+  const landingGamingLaptops = managedLaptops.length >= 4 ? managedLaptops : gamingLaptops;
+  const landingAccessories = managedAccessories.length >= 4 ? managedAccessories : accessoryProducts;
 
   // Fetch official brands
   const brands = await query<Brand[]>(
@@ -165,6 +168,12 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-100 font-sans transition-colors duration-200">
       <Navbar />
+      <PromotionPopup
+        bannerId={promotionBanner?.id}
+        imageUrl={promotionBanner?.image_url}
+        href={promotionBanner?.link_url}
+        alt={promotionBanner?.title || 'Special promotion'}
+      />
 
       <main className="flex-1">
         {/* HERO SLIDER & 3-COLLAGE SECTION */}
@@ -257,7 +266,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {landingFeaturedProducts.map((prod, idx) => (
                 <ProductCard key={`feat-prod-${prod.id}-${idx}`} product={prod} />
               ))}
@@ -311,7 +320,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {landingGamingLaptops.map((prod, idx) => (
                 <ProductCard key={`laptop-prod-${prod.id}-${idx}`} product={prod} />
               ))}
@@ -365,7 +374,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {landingAccessories.map((prod, idx) => (
                 <ProductCard key={`acc-prod-${prod.id}-${idx}`} product={prod} />
               ))}

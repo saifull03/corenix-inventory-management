@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Building2, Bell, Receipt, User, ShieldCheck, LogOut, ExternalLink, Menu } from 'lucide-react';
-import ThemeToggle from '@/components/theme/ThemeToggle';
 import NotificationDropdown from './NotificationDropdown';
 import { useAdminSidebar } from './AdminSidebarContext';
 import {
@@ -122,9 +121,6 @@ export default function AdminHeader() {
           <ExternalLink className="w-3.5 h-3.5" />
           <span className="hidden md:inline">View Store</span>
         </Link>
-
-        {/* Theme Toggle (Dark / Light) */}
-        <ThemeToggle />
 
         {/* Quick POS Button */}
         <Link
