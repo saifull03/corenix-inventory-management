@@ -328,42 +328,6 @@ export default function CategoriesManager({ initialCategories }: Props) {
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between flex-wrap gap-3">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[240px] max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-          <input
-            type="text"
-            placeholder="Search category by name, parent, or slug..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 dark:focus:border-brand-500"
-          />
-        </div>
-
-        {/* Parent Filter Dropdown */}
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-500 dark:text-slate-400 font-semibold hidden sm:inline">Filter:</span>
-          <select
-            value={filterParent}
-            onChange={(e) => setFilterParent(e.target.value)}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none"
-          >
-            <option value="all">All Categories ({categories.length})</option>
-            <option value="root_only">Top-Level Root Only ({rootCategories.length})</option>
-            <option value="sub_only">Subcategories Only ({categories.length - rootCategories.length})</option>
-            <optgroup label="Under Specific Parent">
-              {rootCategories.map((r) => (
-                <option key={r.id} value={String(r.id)}>
-                  Under {r.name}
-                </option>
-              ))}
-            </optgroup>
-          </select>
-        </div>
-      </div>
-
       {/* Featured Categories Order */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-navy-900">
         <div className="mb-5 flex items-center justify-between gap-3">
@@ -435,6 +399,40 @@ export default function CategoriesManager({ initialCategories }: Props) {
           </p>
         )}
       </section>
+
+      {/* Filter and Search Bar */}
+      <div className="p-4 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between flex-wrap gap-3">
+        <div className="relative flex-1 min-w-[240px] max-w-md">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+          <input
+            type="text"
+            placeholder="Search category by name, parent, or slug..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 dark:focus:border-brand-500"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-slate-500 dark:text-slate-400 font-semibold hidden sm:inline">Filter:</span>
+          <select
+            value={filterParent}
+            onChange={(e) => setFilterParent(e.target.value)}
+            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none"
+          >
+            <option value="all">All Categories ({categories.length})</option>
+            <option value="root_only">Top-Level Root Only ({rootCategories.length})</option>
+            <option value="sub_only">Subcategories Only ({categories.length - rootCategories.length})</option>
+            <optgroup label="Under Specific Parent">
+              {rootCategories.map((r) => (
+                <option key={r.id} value={String(r.id)}>
+                  Under {r.name}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
+      </div>
 
       {/* Categories Table */}
       <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">

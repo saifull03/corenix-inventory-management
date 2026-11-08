@@ -253,7 +253,10 @@ export default async function HomePage() {
                     </div>
                   )}
                 </div>
-                <h3 className="line-clamp-2 text-sm font-medium leading-tight text-slate-800 transition-colors group-hover:text-sky-600 dark:text-white dark:group-hover:text-brand-300">
+                <h3
+                  title={cat.name}
+                  className="w-full truncate whitespace-nowrap text-xs font-medium leading-tight text-slate-800 transition-colors group-hover:text-sky-600 dark:text-white dark:group-hover:text-brand-300 sm:text-sm"
+                >
                   {cat.name}
                 </h3>
               </Link>

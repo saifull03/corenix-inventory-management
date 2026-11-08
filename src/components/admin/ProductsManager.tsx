@@ -40,7 +40,7 @@ export interface ProductItem {
   category_name: string;
   primary_image?: string | null;
   overview?: string | null;
-  key_features_json?: string | null;
+  key_features_json?: unknown;
   specification_count?: number | string | null;
   meta_title?: string | null;
   meta_desc?: string | null;
@@ -73,12 +73,24 @@ function getMissingDetails(product: ProductItem): string[] {
 
   let hasKeyFeature = false;
   try {
-    const features = JSON.parse(product.key_features_json || '[]');
-    hasKeyFeature = Array.isArray(features)
-      ? features.some(feature => String(feature).trim())
-      : Boolean(String(features || '').trim());
+    const rawFeatures = product.key_features_json;
+    const features = typeof rawFeatures === 'string'
+      ? JSON.parse(rawFeatures || '[]')
+      : rawFeatures;
+
+    const hasContent = (value: unknown): boolean => {
+      if (typeof value === 'string') return value.trim().length > 0;
+      if (Array.isArray(value)) return value.some(hasContent);
+      if (value && typeof value === 'object') {
+        return Object.values(value).some(hasContent);
+      }
+      return false;
+    };
+
+    hasKeyFeature = hasContent(features);
   } catch {
-    hasKeyFeature = Boolean(product.key_features_json?.trim());
+    hasKeyFeature = typeof product.key_features_json === 'string'
+      && product.key_features_json.trim().length > 0;
   }
   if (!hasKeyFeature) missing.push('Key features');
   if (Number(product.specification_count || 0) < 1) missing.push('Specifications');
