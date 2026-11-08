@@ -75,6 +75,7 @@ const rawMenuItems: MenuItemDef[] = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const { isCollapsed, isMobileOpen, setIsMobileOpen, toggleSidebar } = useAdminSidebar();
+  const [menuSearch, setMenuSearch] = useState('');
   const [currentUser, setCurrentUser] = useState<{
     name?: string;
     role_name?: string;
@@ -142,7 +143,7 @@ export default function AdminSidebar() {
     if (item.purchaseAccess && !canAccessPurchases) return false;
     if (item.financeAccess && !canManagePurchasesRole) return false;
     if (item.hrOrAdminOnly && !isHrOrAdmin) return false;
-    return true;
+    return item.label.toLowerCase().includes(menuSearch.trim().toLowerCase());
   });
 
   const handleLinkClick = () => {
@@ -205,9 +206,30 @@ export default function AdminSidebar() {
             </div>
           </div>
 
+          <div className="px-3 pt-3">
+            <label className="relative block">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={menuSearch}
+                onChange={(event) => setMenuSearch(event.target.value)}
+                placeholder="Search admin menu..."
+                aria-label="Search admin menu"
+                className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-sky-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-cyan-400"
+              />
+            </label>
+          </div>
+
           {/* Navigation Links */}
           <nav className="p-3 space-y-1 text-xs font-semibold">
-            {menuItems.map((item) => {
+            {menuItems.length === 0 ? (
+              <p className="px-3 py-4 text-center text-xs font-medium text-slate-400">
+                No admin sections found.
+              </p>
+            ) : menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (

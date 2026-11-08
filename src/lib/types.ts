@@ -32,10 +32,12 @@ export interface Category {
   slug: string;
   h1?: string;
   image?: string;
+  link_url?: string;
   banner?: string;
   short_desc?: string;
   long_desc?: string;
   order_index: number;
+  is_featured: boolean;
   is_active: boolean;
   meta_title?: string;
   meta_desc?: string;
@@ -312,4 +314,3 @@ export interface OtherHouseSale {
   created_at: string;
   updated_at: string;
 }
-

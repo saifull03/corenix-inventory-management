@@ -14,6 +14,7 @@ import {
   Layers,
   FolderTree,
   Loader2,
+  Star,
 } from 'lucide-react';
 
 export interface CategoryItem {
@@ -21,6 +22,8 @@ export interface CategoryItem {
   parent_id: number | null;
   name: string;
   slug: string;
+  image?: string | null;
+  link_url?: string | null;
   h1?: string | null;
   short_desc?: string | null;
   long_desc?: string | null;
@@ -28,6 +31,7 @@ export interface CategoryItem {
   meta_desc?: string | null;
   focus_keyword?: string | null;
   is_active: number | boolean;
+  is_featured: number | boolean;
   order_index?: number;
   parent_name?: string | null;
   product_count: number;
@@ -56,11 +60,11 @@ export default function CategoriesManager({ initialCategories }: Props) {
   // Form Fields
   const [formName, setFormName] = useState('');
   const [formSlug, setFormSlug] = useState('');
+  const [formImage, setFormImage] = useState('');
+  const [formLinkUrl, setFormLinkUrl] = useState('');
   const [formParentId, setFormParentId] = useState<string>('');
-  const [formH1, setFormH1] = useState('');
-  const [formShortDesc, setFormShortDesc] = useState('');
-  const [formMetaTitle, setFormMetaTitle] = useState('');
-  const [formMetaDesc, setFormMetaDesc] = useState('');
+  const [formIsFeatured, setFormIsFeatured] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Auto-slugify as name changes
   const handleNameChange = (val: string) => {
@@ -78,11 +82,10 @@ export default function CategoriesManager({ initialCategories }: Props) {
     setEditingCat(null);
     setFormName('');
     setFormSlug('');
+    setFormImage('');
+    setFormLinkUrl('');
     setFormParentId('');
-    setFormH1('');
-    setFormShortDesc('');
-    setFormMetaTitle('');
-    setFormMetaDesc('');
+    setFormIsFeatured(false);
     setErrorMsg(null);
     setIsModalOpen(true);
   };
@@ -91,11 +94,10 @@ export default function CategoriesManager({ initialCategories }: Props) {
     setEditingCat(c);
     setFormName(c.name);
     setFormSlug(c.slug);
+    setFormImage(c.image || '');
+    setFormLinkUrl(c.link_url || `/category/${c.slug}`);
     setFormParentId(c.parent_id ? String(c.parent_id) : '');
-    setFormH1(c.h1 || '');
-    setFormShortDesc(c.short_desc || '');
-    setFormMetaTitle(c.meta_title || '');
-    setFormMetaDesc(c.meta_desc || '');
+    setFormIsFeatured(Boolean(c.is_featured));
     setErrorMsg(null);
     setIsModalOpen(true);
   };
@@ -104,6 +106,26 @@ export default function CategoriesManager({ initialCategories }: Props) {
     setIsModalOpen(false);
     setEditingCat(null);
     setErrorMsg(null);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setIsUploadingImage(true);
+    setErrorMsg(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'categories');
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Failed to upload category image.');
+      }
+      setFormImage(data.url);
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Failed to upload category image.');
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const showToast = (msg: string) => {
@@ -126,11 +148,10 @@ export default function CategoriesManager({ initialCategories }: Props) {
     const payload = {
       name: formName.trim(),
       slug: formSlug.trim(),
+      image: formImage.trim(),
+      link_url: formLinkUrl.trim() || `/category/${formSlug.trim()}`,
       parent_id: formParentId ? parseInt(formParentId) : null,
-      h1: formH1.trim() || `${formName.trim()} Price in Bangladesh`,
-      short_desc: formShortDesc.trim() || `Browse authentic ${formName.trim()} products at CORENIX with official manufacturer warranty.`,
-      meta_title: formMetaTitle.trim() || `${formName.trim()} Price in Bangladesh | Official CORENIX`,
-      meta_desc: formMetaDesc.trim() || `Buy genuine ${formName.trim()} in Bangladesh with official manufacturer warranty and fast delivery.`,
+      is_featured: formIsFeatured,
     };
 
     try {
@@ -312,14 +333,16 @@ export default function CategoriesManager({ initialCategories }: Props) {
                         <div className="flex items-center gap-2 pl-3">
                           <span className="text-slate-400 font-mono text-sm leading-none">↳</span>
                           <span className="text-slate-900 dark:text-white text-sm font-semibold group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
-                            {c.name}
+                              {c.is_featured ? <Star className="inline w-3.5 h-3.5 mr-1 text-amber-400 fill-current" /> : null}
+                              {c.name}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-sky-500 dark:bg-brand-400 flex-shrink-0" />
                           <span className="text-slate-900 dark:text-white text-sm font-black group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
-                            {c.name}
+                              {c.is_featured ? <Star className="inline w-3.5 h-3.5 mr-1 text-amber-400 fill-current" /> : null}
+                              {c.name}
                           </span>
                         </div>
                       )}
@@ -418,7 +441,7 @@ export default function CategoriesManager({ initialCategories }: Props) {
                     {editingCat ? `Edit Category: ${editingCat.name}` : 'Add New Category'}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Configure name, hierarchy level, URL slug, and SEO metadata.
+                    Configure the category name, featured image, and category link.
                   </p>
                 </div>
               </div>
@@ -495,62 +518,78 @@ export default function CategoriesManager({ initialCategories }: Props) {
                     Public URL: /category/{formSlug || '...'}
                   </span>
                 </div>
-              </div>
 
-              {/* H1 Heading */}
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
-                  Page SEO H1 Heading
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Graphics Card (GPU) Price in Bangladesh"
-                  value={formH1}
-                  onChange={(e) => setFormH1(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white focus:outline-none"
-                />
-              </div>
-
-              {/* Short Description */}
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
-                  Category Short Summary
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Summary text displayed at the top of the category catalogue..."
-                  value={formShortDesc}
-                  onChange={(e) => setFormShortDesc(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white focus:outline-none"
-                />
-              </div>
-
-              {/* SEO Meta Box */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-brand-400 block">
-                  SEO Metadata (Auto-generated if left blank)
-                </span>
-                <div>
-                  <label className="block text-slate-600 dark:text-slate-400 text-[11px] mb-1">Meta Title</label>
+                {/* Featured category image and link */}
+                <div className="sm:col-span-2">
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
+                    Featured Category Image URL
+                  </label>
                   <input
                     type="text"
-                    placeholder={`${formName || 'Category'} Price in Bangladesh | Official CORENIX`}
-                    value={formMetaTitle}
-                    onChange={(e) => setFormMetaTitle(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-slate-900 dark:text-white"
+                    placeholder="/uploads/categories/category.png or https://..."
+                    value={formImage}
+                    onChange={(e) => setFormImage(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 dark:focus:border-brand-500"
                   />
+                  <label className="mt-2 inline-flex cursor-pointer items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 hover:border-sky-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    {isUploadingImage ? 'Uploading...' : 'Upload image'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                      className="hidden"
+                      disabled={isUploadingImage}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) void handleImageUpload(file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                  <span className="mt-1 block text-[10px] text-slate-500 dark:text-slate-400">
+                    Recommended size: 300 × 300 px square image. Maximum file size: 8 MB.
+                  </span>
+                  {formImage && (
+                    <div className="mt-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-800/60">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={formImage} alt="" className="h-14 w-14 rounded-lg object-contain bg-white" />
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                        This image is used only for this category&apos;s featured tile.
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-slate-600 dark:text-slate-400 text-[11px] mb-1">Meta Description</label>
-                  <textarea
-                    rows={2}
-                    placeholder={`Buy authentic ${formName || 'Category'} in Bangladesh from CORENIX with official warranty.`}
-                    value={formMetaDesc}
-                    onChange={(e) => setFormMetaDesc(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-slate-900 dark:text-white"
+
+                <div className="sm:col-span-2">
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">
+                    Featured Category Link
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={`/category/${formSlug || 'category-slug'} or https://example.com`}
+                    value={formLinkUrl}
+                    onChange={(e) => setFormLinkUrl(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 dark:focus:border-brand-500"
                   />
+                  <span className="text-[10px] text-slate-500 mt-1 block">
+                    Clicking this featured category image or name opens this link. Leave blank to use the category page.
+                  </span>
                 </div>
               </div>
+
+              <label className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-slate-700 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={formIsFeatured}
+                onChange={(e) => setFormIsFeatured(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-amber-500"
+              />
+              <span>
+                <span className="block font-bold">Show in Featured Categories</span>
+                <span className="mt-0.5 block text-[10px] text-slate-500 dark:text-slate-400">
+                  This category appears in the homepage category grid.
+                </span>
+              </span>
+              </label>
 
               {/* Action Buttons */}
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">

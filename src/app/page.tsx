@@ -48,10 +48,10 @@ export default async function HomePage() {
     .map(b => b.title.trim()) || [];
 
   const categories = await query<Category[]>(
-    `SELECT id, name, slug, short_desc
+    `SELECT id, name, slug, image, link_url, short_desc
      FROM categories
-     WHERE is_active = 1 AND parent_id IS NOT NULL
-     ORDER BY order_index ASC LIMIT 8`
+     WHERE is_active = 1 AND is_featured = 1
+    ORDER BY order_index ASC, name ASC LIMIT 16`
   );
 
   // 1. Fetch featured products (Trending Products & Hot Deals)
@@ -211,46 +211,52 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* DYNAMIC CATEGORY SHOWCASE */}
-        <section className="py-16 max-w-7xl mx-auto px-4">
-          <div className="flex items-end justify-between mb-8">
+        {/* FEATURED CATEGORY SHOWCASE */}
+        <section className="border-b border-slate-200/80 bg-white py-10 dark:border-slate-800/80 dark:bg-navy-900/40">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="mb-7 flex items-end justify-between">
             <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-brand-400 mb-1">
-                Browse Components &amp; Systems
+              <div className="mb-1 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-brand-400">
+                Browse by category
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                Featured Hardware Categories
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white sm:text-3xl">
+                Featured Categories
               </h2>
             </div>
             <Link href="/products" className="text-xs font-bold text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-brand-400 flex items-center gap-1">
               <span>View All Categories</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </div>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((cat) => (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-8">
+              {categories.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/category/${cat.slug}`}
-                className="group p-5 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200/80 dark:border-slate-800 hover:border-sky-500/50 hover:bg-slate-50/80 dark:hover:bg-slate-900/80 transition-all duration-300 flex flex-col justify-between shadow-2xs hover:shadow-xs"
+                href={cat.link_url || `/category/${cat.slug}`}
+                className="group flex min-w-0 flex-col items-center text-center transition-transform duration-200 hover:-translate-y-1"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-sky-50 dark:bg-slate-800/80 dark:group-hover:bg-brand-500/10 flex items-center justify-center transition-colors">
-                    {getCatIcon(cat.slug)}
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 dark:group-hover:text-brand-400 group-hover:translate-x-1 transition-all" />
+                <div className="mb-3 flex h-20 w-full items-center justify-center">
+                  {cat.image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={cat.image}
+                      alt=""
+                      className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-sky-50 group-hover:text-sky-600 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-brand-500/10 dark:group-hover:text-brand-400">
+                      {getCatIcon(cat.slug)}
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-white group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
-                    {cat.name}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-1">
-                    {cat.short_desc}
-                  </p>
-                </div>
+                <h3 className="line-clamp-2 text-sm font-medium leading-tight text-slate-800 transition-colors group-hover:text-sky-600 dark:text-white dark:group-hover:text-brand-300">
+                  {cat.name}
+                </h3>
               </Link>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 

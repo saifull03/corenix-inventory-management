@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     const folderRaw = (formData.get('folder') as string) || 'banners';
-    const safeFolder = ['brands', 'products', 'banners', 'general'].includes(folderRaw) ? folderRaw : 'banners';
+    const safeFolder = ['brands', 'products', 'banners', 'categories', 'general'].includes(folderRaw) ? folderRaw : 'banners';
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/svg+xml'];
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     // Build safe filename
     const ext = file.name.split('.').pop()?.toLowerCase() || (file.type === 'image/svg+xml' ? 'svg' : 'jpg');
-    const prefix = safeFolder === 'brands' ? 'brand' : safeFolder === 'products' ? 'prod' : 'banner';
+    const prefix = safeFolder === 'brands' ? 'brand' : safeFolder === 'products' ? 'prod' : safeFolder === 'categories' ? 'category' : 'banner';
     const safeName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
 
     // Resolve upload directory

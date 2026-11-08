@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
     const {
       name,
       slug,
+      image,
+      link_url,
       parent_id,
       h1,
       short_desc,
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
       meta_title,
       meta_desc,
       focus_keyword,
+      is_featured,
     } = body;
 
     if (!name || !name.trim()) {
@@ -57,18 +60,21 @@ export async function POST(req: NextRequest) {
 
     const res = await query<any>(
       `INSERT INTO categories (
-        parent_id, name, slug, h1, short_desc, long_desc, meta_title, meta_desc, focus_keyword, is_active
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+        parent_id, name, slug, image, link_url, h1, short_desc, long_desc, meta_title, meta_desc, focus_keyword, is_featured, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
       [
         parent_id ? parseInt(parent_id) : null,
         cleanName,
         finalSlug,
+        image?.trim() || null,
+        link_url?.trim() || `/category/${finalSlug}`,
         h1?.trim() || `${cleanName} Price in Bangladesh`,
         short_desc?.trim() || `Browse authentic ${cleanName} products at CORENIX with official manufacturer warranty.`,
         long_desc?.trim() || '',
         meta_title?.trim() || `${cleanName} Price in Bangladesh | Official CORENIX`,
         meta_desc?.trim() || `Buy genuine ${cleanName} in Bangladesh with official manufacturer warranty and fast delivery.`,
         focus_keyword?.trim() || cleanName.toLowerCase(),
+        is_featured ? 1 : 0,
       ]
     );
 
@@ -103,6 +109,8 @@ export async function PUT(req: NextRequest) {
       id,
       name,
       slug,
+      image,
+      link_url,
       parent_id,
       h1,
       short_desc,
@@ -110,6 +118,7 @@ export async function PUT(req: NextRequest) {
       meta_title,
       meta_desc,
       is_active,
+      is_featured,
     } = body;
 
     if (!id) {
@@ -138,23 +147,29 @@ export async function PUT(req: NextRequest) {
       `UPDATE categories SET
         name = ?,
         slug = ?,
+        image = ?,
+        link_url = ?,
         parent_id = ?,
         h1 = ?,
         short_desc = ?,
         long_desc = ?,
         meta_title = ?,
         meta_desc = ?,
+        is_featured = ?,
         is_active = ?
       WHERE id = ?`,
       [
         cleanName,
         finalSlug,
+        image !== undefined ? image : existing.image,
+        link_url !== undefined ? (link_url.trim() || `/category/${finalSlug}`) : (existing.link_url || `/category/${finalSlug}`),
         parent_id !== undefined ? (parent_id ? parseInt(parent_id) : null) : existing.parent_id,
         h1 !== undefined ? h1 : existing.h1,
         short_desc !== undefined ? short_desc : existing.short_desc,
         long_desc !== undefined ? long_desc : existing.long_desc,
         meta_title !== undefined ? meta_title : existing.meta_title,
         meta_desc !== undefined ? meta_desc : existing.meta_desc,
+        is_featured !== undefined ? (is_featured ? 1 : 0) : existing.is_featured,
         is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active,
         id,
       ]
