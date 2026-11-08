@@ -15,6 +15,7 @@ import {
   FolderTree,
   Loader2,
   Star,
+  GripVertical,
 } from 'lucide-react';
 
 export interface CategoryItem {
@@ -65,6 +66,8 @@ export default function CategoriesManager({ initialCategories }: Props) {
   const [formParentId, setFormParentId] = useState<string>('');
   const [formIsFeatured, setFormIsFeatured] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [draggedCategoryId, setDraggedCategoryId] = useState<number | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
 
   // Auto-slugify as name changes
   const handleNameChange = (val: string) => {
@@ -223,6 +226,55 @@ export default function CategoriesManager({ initialCategories }: Props) {
     }
   };
 
+  const handleCategoryDrop = async (targetId: number) => {
+    if (draggedCategoryId === null || draggedCategoryId === targetId || isReordering) return;
+
+    const featuredCategories = categories
+      .filter((category) => Boolean(category.is_featured))
+      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+    const draggedIndex = featuredCategories.findIndex((category) => category.id === draggedCategoryId);
+    const targetIndex = featuredCategories.findIndex((category) => category.id === targetId);
+
+    if (draggedIndex < 0 || targetIndex < 0) return;
+
+    const reordered = [...featuredCategories];
+    const [draggedCategory] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, draggedCategory);
+    const previousCategories = categories;
+    const orderById = new Map(reordered.map((category, index) => [category.id, index]));
+
+    setCategories((current) => {
+      const updatedFeatured = reordered.map((category) => ({
+        ...category,
+        order_index: orderById.get(category.id),
+      }));
+      let featuredIndex = 0;
+
+      return current.map((category) => {
+        if (!category.is_featured) return category;
+        return updatedFeatured[featuredIndex++];
+      });
+    });
+    setDraggedCategoryId(null);
+    setIsReordering(true);
+
+    try {
+      const response = await fetch('/api/categories/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categoryIds: reordered.map((category) => category.id) }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to save category order.');
+      showToast('Featured category order saved.');
+    } catch (error: any) {
+      setCategories(previousCategories);
+      setErrorMsg(error.message || 'Failed to save category order.');
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   // Top level categories for parent dropdown
   const rootCategories = categories.filter((c) => !c.parent_id);
 
@@ -239,6 +291,9 @@ export default function CategoriesManager({ initialCategories }: Props) {
     if (filterParent !== 'all') return String(c.parent_id) === filterParent;
     return true;
   });
+  const featuredCategories = categories
+    .filter((category) => Boolean(category.is_featured))
+    .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
 
   return (
     <div className="space-y-6">
@@ -260,7 +315,7 @@ export default function CategoriesManager({ initialCategories }: Props) {
             Category Management ({categories.length})
           </h1>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-            Dynamic category tree, multi-tier mega navigation, SEO metadata, and category-based attribute templates.
+            Drag featured categories to choose their homepage order. Use the star toggle to add or remove a category.
           </p>
         </div>
 
@@ -309,6 +364,78 @@ export default function CategoriesManager({ initialCategories }: Props) {
         </div>
       </div>
 
+      {/* Featured Categories Order */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-navy-900">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-black text-slate-900 dark:text-white">
+              Featured Categories Homepage Order
+            </h2>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              Drag the category tiles to set the exact serial shown on the homepage.
+            </p>
+          </div>
+          {isReordering && (
+            <span className="text-[11px] font-semibold text-sky-600 dark:text-brand-400">
+              Saving order...
+            </span>
+          )}
+        </div>
+
+        {featuredCategories.length > 0 ? (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 lg:grid-cols-8">
+            {featuredCategories.map((category, index) => (
+              <div
+                key={category.id}
+                draggable={!isReordering}
+                onDragStart={() => setDraggedCategoryId(category.id)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  void handleCategoryDrop(category.id);
+                }}
+                onDragEnd={() => setDraggedCategoryId(null)}
+                className={`group relative flex min-w-0 cursor-grab flex-col items-center text-center transition-transform hover:-translate-y-1 ${
+                  draggedCategoryId === category.id ? 'opacity-40' : ''
+                }`}
+              >
+                <span className="absolute -left-1 -top-2 z-10 flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-600 px-1.5 text-[10px] font-black text-white dark:bg-brand-500 dark:text-navy-950">
+                  {index + 1}
+                </span>
+                <div className="mb-3 flex h-20 w-full items-center justify-center rounded-xl border border-transparent group-hover:border-sky-200 dark:group-hover:border-brand-500/40">
+                  {category.image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={category.image}
+                      alt=""
+                      className="h-full w-full object-contain transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-2xl text-slate-400 dark:bg-slate-800">
+                      ?
+                    </div>
+                  )}
+                </div>
+                <span className="line-clamp-2 text-sm font-medium leading-tight text-slate-800 dark:text-white">
+                  {category.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => openEditModal(category)}
+                  className="mt-2 text-[10px] font-bold text-sky-600 hover:text-sky-800 dark:text-brand-400 dark:hover:text-brand-300"
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed border-slate-300 py-8 text-center text-xs text-slate-500 dark:border-slate-700">
+            No featured categories yet. Edit a category and enable “Show in Featured Categories”.
+          </p>
+        )}
+      </section>
+
       {/* Categories Table */}
       <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
@@ -326,13 +453,31 @@ export default function CategoriesManager({ initialCategories }: Props) {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {filteredCategories.length > 0 ? (
                 filteredCategories.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group">
+                  <tr
+                    key={c.id}
+                    draggable={Boolean(c.is_featured)}
+                    onDragStart={() => {
+                      if (c.is_featured) setDraggedCategoryId(c.id);
+                    }}
+                    onDragOver={(event) => {
+                      if (c.is_featured) event.preventDefault();
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      if (c.is_featured) void handleCategoryDrop(c.id);
+                    }}
+                    onDragEnd={() => setDraggedCategoryId(null)}
+                    className={`hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group ${
+                      draggedCategoryId === c.id ? 'opacity-40' : ''
+                    }`}
+                  >
                     {/* Category Name (HIGH CONTRAST: text-slate-900 in light mode, text-white in dark mode) */}
                     <td className="py-3.5 px-4 font-bold">
                       {c.parent_id ? (
                         <div className="flex items-center gap-2 pl-3">
                           <span className="text-slate-400 font-mono text-sm leading-none">↳</span>
-                          <span className="text-slate-900 dark:text-white text-sm font-semibold group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
+                          <span className="flex items-center text-slate-900 dark:text-white text-sm font-semibold group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
+                              {c.is_featured && <GripVertical className="mr-1.5 h-4 w-4 cursor-grab text-slate-400" aria-label="Drag to reorder" />}
                               {c.is_featured ? <Star className="inline w-3.5 h-3.5 mr-1 text-amber-400 fill-current" /> : null}
                               {c.name}
                           </span>
@@ -340,7 +485,8 @@ export default function CategoriesManager({ initialCategories }: Props) {
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-sky-500 dark:bg-brand-400 flex-shrink-0" />
-                          <span className="text-slate-900 dark:text-white text-sm font-black group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
+                          <span className="flex items-center text-slate-900 dark:text-white text-sm font-black group-hover:text-sky-600 dark:group-hover:text-brand-300 transition-colors">
+                              {c.is_featured && <GripVertical className="mr-1.5 h-4 w-4 cursor-grab text-slate-400" aria-label="Drag to reorder" />}
                               {c.is_featured ? <Star className="inline w-3.5 h-3.5 mr-1 text-amber-400 fill-current" /> : null}
                               {c.name}
                           </span>
@@ -422,6 +568,10 @@ export default function CategoriesManager({ initialCategories }: Props) {
             </tbody>
           </table>
         </div>
+        <p className="mt-3 text-[10px] text-slate-500 dark:text-slate-400">
+          Drag the grip icon on starred categories to set the first, middle, and last positions.
+          {isReordering ? ' Saving order...' : ''}
+        </p>
       </div>
 
       {/* ======================================================== */}
