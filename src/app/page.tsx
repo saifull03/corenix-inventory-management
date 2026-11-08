@@ -142,9 +142,11 @@ export default async function HomePage() {
     getLandingProducts('gaming_laptops', 8),
     getLandingProducts('accessories', 8),
   ]);
-  const landingFeaturedProducts = managedFeatured.length >= 4 ? managedFeatured : featuredProducts;
-  const landingGamingLaptops = managedLaptops.length >= 4 ? managedLaptops : gamingLaptops;
-  const landingAccessories = managedAccessories.length >= 4 ? managedAccessories : accessoryProducts;
+  // Landing-page product sections are fully controlled by Admin > Landing page
+  // merchandising. An empty saved placement intentionally renders no products.
+  const landingFeaturedProducts = managedFeatured;
+  const landingGamingLaptops = managedLaptops;
+  const landingAccessories = managedAccessories;
 
   // Fetch official brands
   const brands = await query<Brand[]>(

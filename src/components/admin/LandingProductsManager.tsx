@@ -29,6 +29,7 @@ export default function LandingProductsManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [draggedProductId, setDraggedProductId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -82,6 +83,20 @@ export default function LandingProductsManager() {
         ? current.filter((productId) => productId !== id)
         : current.length < limit ? [...current, id] : current
     );
+  };
+
+  const reorderSelectedProduct = (targetProductId: number) => {
+    if (draggedProductId === null || draggedProductId === targetProductId) return;
+
+    const sourceIndex = selected.indexOf(draggedProductId);
+    const targetIndex = selected.indexOf(targetProductId);
+    if (sourceIndex < 0 || targetIndex < 0) return;
+
+    const reordered = [...selected];
+    const [draggedProduct] = reordered.splice(sourceIndex, 1);
+    reordered.splice(targetIndex, 0, draggedProduct);
+    setSelected(reordered);
+    setDraggedProductId(null);
   };
 
   const save = async () => {
@@ -184,17 +199,32 @@ export default function LandingProductsManager() {
             {selected.map((productId, index) => {
               const product = products.find((item) => item.id === productId);
               return (
-                <button
+                <div
                   key={productId}
-                  type="button"
-                  onClick={() => toggleProduct(productId)}
-                  className="inline-flex max-w-full items-center gap-2 border border-sky-700 bg-white px-2 py-1.5 text-left text-xs text-slate-700 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700 active:bg-red-100 dark:border-sky-500 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300 focus-visible:ring-2 focus-visible:ring-sky-400"
-                  aria-label={`Unselect ${product?.name || 'product'}`}
+                  draggable
+                  onDragStart={() => setDraggedProductId(productId)}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    reorderSelectedProduct(productId);
+                  }}
+                  onDragEnd={() => setDraggedProductId(null)}
+                  className={`inline-flex max-w-full cursor-grab items-center gap-2 border border-sky-700 bg-white px-2 py-1.5 text-left text-xs text-slate-700 transition-colors hover:border-sky-500 active:cursor-grabbing dark:border-sky-500 dark:bg-slate-950 dark:text-slate-200 ${
+                    draggedProductId === productId ? 'opacity-40' : ''
+                  }`}
                 >
+                  <GripVertical className="h-4 w-4 shrink-0 text-slate-400" aria-label="Drag to reorder" />
                   <span className="font-bold text-sky-700 dark:text-sky-300">{index + 1}</span>
                   <span className="max-w-[220px] truncate">{product?.name || `Product #${productId}`}</span>
-                  <span aria-hidden="true" className="text-base leading-none">×</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleProduct(productId)}
+                    className="text-base leading-none text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+                    aria-label={`Unselect ${product?.name || 'product'}`}
+                  >
+                    ×
+                  </button>
+                </div>
               );
             })}
           </div>
