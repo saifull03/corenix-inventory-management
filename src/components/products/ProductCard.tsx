@@ -78,49 +78,54 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <article className="group pcard flex min-w-0 flex-col overflow-hidden rounded-[24px] border border-slate-200/90 bg-white shadow-[0_4px_14px_rgba(15,23,42,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] dark:border-slate-700/80 dark:bg-navy-900 dark:shadow-[0_4px_14px_rgba(0,0,0,0.2)] dark:hover:border-slate-600 dark:hover:shadow-[0_10px_24px_rgba(0,0,0,0.3)]">
-      <div className="media relative h-64 bg-white p-7 sm:h-72 sm:p-8 dark:bg-slate-100">
-        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start pointer-events-none">
-          {isEmiEligible && (
-            <span className="bg-white/90 text-slate-600 border border-slate-200 font-semibold text-[10px] px-2 py-1 rounded-full">
-              0% EMI
-            </span>
-          )}
+    <article
+      style={{ fontFamily: "'Inter', 'Interfallback', sans-serif" }}
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl sm:rounded-[20px] border border-slate-200/90 bg-white font-['Inter',_'Interfallback',_sans-serif] shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-900 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-slate-700 dark:hover:shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
+    >
+      {/* 0% EMI Badge */}
+      {isEmiEligible && (
+        <div className="absolute top-3 left-3 z-10 pointer-events-none">
+          <span className="rounded-full border border-slate-200/90 bg-white/95 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-300">
+            0% EMI
+          </span>
         </div>
+      )}
 
-        <div className="absolute top-3 right-3 z-10 flex gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
-          <button
-            type="button"
-            onClick={handleWishlistToggle}
-            className={`w-8 h-8 rounded-full border border-slate-200 bg-white/95 shadow-sm flex items-center justify-center transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-slate-500 ${
-              isWishlisted
-                ? 'text-rose-500 border-rose-200 bg-rose-50 dark:bg-rose-950/30'
-                : 'text-slate-500 hover:text-slate-900 hover:border-slate-400'
-            }`}
-            title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            aria-label="Wishlist"
-          >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current text-rose-500' : ''}`} />
-          </button>
-          <button
-            type="button"
-            onClick={handleCompareToggle}
-            className={`w-8 h-8 rounded-full border border-slate-200 bg-white/95 shadow-sm flex items-center justify-center transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-slate-500 ${
-              isCompared
-                ? 'text-slate-900 border-slate-400 bg-slate-100'
-                : 'text-slate-500 hover:text-slate-900 hover:border-slate-400'
-            }`}
-            title={isCompared ? 'Remove from compare' : 'Add to compare'}
-            aria-label="Compare"
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+      {/* Top action buttons (hidden by default, revealed on hover) */}
+      <div className="absolute top-3 right-3 z-10 flex gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100">
+        <button
+          type="button"
+          onClick={handleWishlistToggle}
+          className={`flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white/95 shadow-sm transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700 dark:bg-slate-800/95 ${
+            isWishlisted
+              ? 'border-rose-200 bg-rose-50 text-rose-500 dark:border-rose-900/50 dark:bg-rose-950/40'
+              : 'text-slate-500 hover:border-slate-400 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+          }`}
+          title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-label="Wishlist"
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current text-rose-500' : ''}`} />
+        </button>
+        <button
+          type="button"
+          onClick={handleCompareToggle}
+          className={`flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white/95 shadow-sm transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700 dark:bg-slate-800/95 ${
+            isCompared
+              ? 'border-slate-400 bg-slate-100 text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white'
+              : 'text-slate-500 hover:border-slate-400 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+          }`}
+          title={isCompared ? 'Remove from compare' : 'Add to compare'}
+          aria-label="Compare"
+        >
+          <ArrowLeftRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
 
-        {/* Product Photo */}
+      {/* Product Image Area - Uniform fixed height for all cards */}
+      <div className="relative flex h-52 sm:h-60 w-full shrink-0 items-center justify-center overflow-hidden bg-white p-4 sm:p-5 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80">
         <Link
           href={`/product/${product.slug}`}
-          className="h-full w-full flex items-center justify-center"
+          className="flex h-full w-full items-center justify-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -128,7 +133,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             width={400}
             height={400}
-            className={`h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-105 ${
+            className={`max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 ${
               isOutOfStock ? 'opacity-60 grayscale-[30%]' : ''
             }`}
             loading="lazy"
@@ -137,38 +142,50 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-      <div className="pbody flex flex-col gap-2 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
-        <h4 className="ptitle min-h-[26px] text-lg font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">
-          <Link
-            href={`/product/${product.slug}`}
-            title={product.name}
-            className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            {product.name}
-          </Link>
-        </h4>
+      {/* Product Information - Evenly distributed flex layout */}
+      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
+        {/* Title: Fixed 2-line box so titles always occupy the exact same vertical space */}
+        <div className="h-11 sm:h-12 overflow-hidden mb-2">
+          <h3 className="line-clamp-2 text-sm sm:text-base font-semibold leading-snug text-slate-900 dark:text-white">
+            <Link
+              href={`/product/${product.slug}`}
+              title={product.name}
+              className="text-slate-900 dark:text-white hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            >
+              {product.name}
+            </Link>
+          </h3>
+        </div>
 
-        <div className="price flex w-full flex-col items-start gap-2">
+        {/* Pricing: Aligned to bottom with reserved height for consistency across discount & non-discount products */}
+        <div className="mt-auto flex flex-col justify-end w-full">
           {isCallForPrice ? (
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              Call for price
-            </span>
-          ) : (
-            <>
-              <span className="block text-xl font-bold text-slate-900 dark:text-white tabular-nums">
-                ৳{currentPrice.toLocaleString('en-US')}
+            <div className="h-[52px] flex items-center">
+              <span className="text-xl font-bold text-slate-900 dark:text-white">
+                Call for price
               </span>
-              {hasDiscount && (
-                <div className="flex w-full flex-wrap items-center gap-2">
-                  <span className="old text-base text-slate-500 dark:text-slate-400 line-through tabular-nums">
-                    ৳{regularPrice.toLocaleString('en-US')}
-                  </span>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                    ৳ {savingsAmount.toLocaleString('en-US')} OFF
-                  </span>
-                </div>
-              )}
-            </>
+            </div>
+          ) : (
+            <div className="flex flex-col items-start gap-1 w-full">
+              {/* Main Price */}
+              <div className="text-xl sm:text-[22px] font-bold tracking-tight text-slate-900 dark:text-white">
+                ৳{currentPrice.toLocaleString('en-US')}
+              </div>
+
+              {/* Sub-row: Strikethrough price + discount pill (min-height keeps height consistent) */}
+              <div className="min-h-[24px] flex items-center">
+                {hasDiscount ? (
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <span className="text-sm font-normal text-slate-400 line-through dark:text-slate-500 tabular-nums">
+                      ৳{regularPrice.toLocaleString('en-US')}
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-xs font-semibold text-[#16a34a] dark:bg-emerald-950/70 dark:text-emerald-400">
+                      ৳ {savingsAmount.toLocaleString('en-US')} OFF
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
           )}
         </div>
       </div>

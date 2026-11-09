@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,8 +49,8 @@
   --grey-900: #161A23;
 
   /* Typography Fonts */
-  --font-ui: ui-sans-serif, system-ui, sans-serif;
-  --font-bn: ui-sans-serif, system-ui, sans-serif;
+  --font-ui: 'Inter', 'Interfallback', sans-serif;
+  --font-bn: 'Inter', 'Interfallback', sans-serif;
 
   /* Radius scale */
   --r-badge: 4px;

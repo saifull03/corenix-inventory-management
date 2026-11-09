@@ -162,9 +162,9 @@ const config: Config = {
         }
       },
       fontFamily: {
-        ui: ["ui-sans-serif", "system-ui", "sans-serif"],
-        bn: ["ui-sans-serif", "system-ui", "sans-serif"],
-        sans: ["ui-sans-serif", "system-ui", "sans-serif"],
+        ui: ["Inter", "Interfallback", "sans-serif", "system-ui"],
+        bn: ["Inter", "Interfallback", "sans-serif", "system-ui"],
+        sans: ["Inter", "Interfallback", "sans-serif", "system-ui"],
         mono: ["ui-monospace", "Menlo", "monospace"],
       },
       borderRadius: {
