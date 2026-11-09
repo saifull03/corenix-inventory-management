@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ChevronLeft,
   ChevronRight,
@@ -119,7 +120,7 @@ export default function HeroSlider({
   // Auto-fetch if no initial banners provided
   useEffect(() => {
     if (initialBanners.length === 0) {
-      fetch('/api/admin/banners?position=hero&active=true')
+      fetch('/api/banners?position=hero')
         .then((r) => r.json())
         .then((d) => {
           if (d.success && d.banners && d.banners.length > 0) {
@@ -130,7 +131,7 @@ export default function HeroSlider({
     }
 
     if (initialCollageBanners.length === 0) {
-      fetch('/api/admin/banners?position=hero_collage&active=true')
+      fetch('/api/banners?position=hero_collage')
         .then((r) => r.json())
         .then((d) => {
           if (d.success && d.banners && d.banners.length > 0) {
@@ -221,11 +222,11 @@ export default function HeroSlider({
               style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 2 : 1 }}
               aria-hidden={i !== current}
             >
-              {/* Background image: Crystal Clear, 100% Brightness */}
-              <div
-                className="absolute inset-[-2px] bg-cover bg-center bg-no-repeat"
+              {/* Only the current slide and its successor are mounted to avoid eager downloads. */}
+              {(i === current || i === (current + 1) % banners.length) && (
+                <div
+                className="absolute inset-[-2px] overflow-hidden bg-navy-950"
                 style={{
-                  backgroundImage: `url(${b.image_url})`,
                   animation: i === current
                     ? `${i % 2 === 0 ? 'heroZoomIn' : 'heroZoomOut'} ${SLIDE_DURATION}ms ease-out both`
                     : 'none',
@@ -235,7 +236,17 @@ export default function HeroSlider({
                   WebkitBackfaceVisibility: 'hidden',
                   contain: 'paint',
                 }}
-              />
+                >
+                  <Image
+                    src={b.image_url}
+                    alt=""
+                    fill
+                    priority={i === 0}
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    className="object-cover object-center"
+                  />
+                </div>
+              )}
               {/* Ultra light subtle vignette only for soft text legibility, NO heavy black blur */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
             </div>
@@ -358,9 +369,13 @@ export default function HeroSlider({
               className="group relative block min-w-0 max-w-full aspect-[16/9] min-h-0 flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:min-h-[210px] sm:rounded-3xl lg:min-h-0 dark:border-slate-800/90"
             >
               {/* 100% Crisp, Clean Picture - NO TEXT, NO BLACK BLUR */}
-              <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 ease-out group-hover:scale-105"
-                style={{ backgroundImage: `url(${promo.image_url})` }}
+              <Image
+                src={promo.image_url}
+                alt={promo.title || 'Promotion'}
+                fill
+                loading="lazy"
+                sizes="(max-width: 1024px) 50vw, 34vw"
+                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
               />
             </Link>
           ))}

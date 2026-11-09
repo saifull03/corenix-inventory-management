@@ -7,7 +7,7 @@ import HeroSlider from '@/components/layout/HeroSlider';
 import PromotionPopup from '@/components/layout/PromotionPopup';
 import AnnouncementMarquee from '@/components/layout/AnnouncementMarquee';
 import { query } from '@/lib/db';
-import { Product, Category, Brand } from '@/lib/types';
+import { Category, Brand } from '@/lib/types';
 import { getLandingProducts } from '@/lib/landing-products';
 import {
   ArrowRight,
@@ -27,14 +27,36 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function HomePage() {
-  // Fetch all active banners for dynamic management from Admin Panel
-  const allBanners = await query<any[]>(
-    `SELECT * FROM banners WHERE is_active = 1 ORDER BY order_index ASC, id ASC`
-  );
+  const [
+    allBanners,
+    categories,
+    managedFeatured,
+    managedLaptops,
+    managedAccessories,
+    brands,
+  ] = await Promise.all([
+    query<any[]>(
+      `SELECT * FROM banners WHERE is_active = 1 ORDER BY order_index ASC, id ASC`
+    ),
+    query<Category[]>(
+      `SELECT id, name, slug, image, link_url, short_desc
+       FROM categories
+       WHERE is_active = 1 AND is_featured = 1
+      ORDER BY order_index ASC, name ASC LIMIT 16`
+    ),
+    getLandingProducts('featured', 8),
+    getLandingProducts('gaming_laptops', 8),
+    getLandingProducts('accessories', 8),
+    query<Brand[]>(
+      `SELECT id, name, slug, logo, country, short_desc
+       FROM brands
+       WHERE is_active = 1
+       ORDER BY is_featured DESC, name ASC LIMIT 10`
+    ),
+  ]);
 
   const heroBanners = allBanners?.filter(b => b.position === 'hero') || [];
   const collageBanners = allBanners?.filter(b => b.position === 'hero_collage') || [];
@@ -47,114 +69,11 @@ export default async function HomePage() {
     ?.filter(b => b.position === 'marquee' && b.title?.trim())
     .map(b => b.title.trim()) || [];
 
-  const categories = await query<Category[]>(
-    `SELECT id, name, slug, image, link_url, short_desc
-     FROM categories
-     WHERE is_active = 1 AND is_featured = 1
-    ORDER BY order_index ASC, name ASC LIMIT 16`
-  );
-
-  // 1. Fetch featured products (Trending Products & Hot Deals)
-  const featuredProducts = await query<Product[]>(
-    `SELECT p.*,
-            b.name as brand_name, b.slug as brand_slug,
-            c.name as category_name, c.slug as category_slug,
-            (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.is_primary DESC, pi.id ASC LIMIT 1) as primary_image,
-            (SELECT SUM(quantity - reserved_qty) FROM inventory WHERE product_id = p.id) as total_stock
-     FROM products p
-     JOIN brands b ON p.brand_id = b.id
-     JOIN categories c ON p.category_id = c.id
-     WHERE p.status = 'published'
-     GROUP BY p.id
-     ORDER BY (p.is_featured = 1 OR p.is_hot = 1) DESC, p.is_featured DESC, p.is_hot DESC, p.created_at DESC
-     LIMIT 8`
-  );
-
-  // 2. Fetch Gaming & High-Performance Laptops
-  const rawLaptops = await query<Product[]>(
-    `SELECT p.*,
-            b.name as brand_name, b.slug as brand_slug,
-            c.name as category_name, c.slug as category_slug,
-            (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.is_primary DESC, pi.id ASC LIMIT 1) as primary_image,
-            (SELECT SUM(quantity - reserved_qty) FROM inventory WHERE product_id = p.id) as total_stock
-     FROM products p
-     JOIN brands b ON p.brand_id = b.id
-     JOIN categories c ON p.category_id = c.id
-     WHERE p.status = 'published' AND (
-       c.slug LIKE '%laptop%' OR
-       c.name LIKE '%laptop%' OR
-       p.name LIKE '%laptop%' OR
-       p.name LIKE '%rog%' OR
-       p.name LIKE '%tuf%' OR
-       p.name LIKE '%legion%' OR
-       p.name LIKE '%predator%' OR
-       p.name LIKE '%alienware%' OR
-       p.name LIKE '%victus%' OR
-       p.name LIKE '%zephyrus%' OR
-       p.name LIKE '%strix%' OR
-       p.name LIKE '%omen%'
-     )
-     GROUP BY p.id
-     ORDER BY (p.is_featured = 1 OR p.is_hot = 1) DESC, p.created_at DESC
-     LIMIT 8`
-  );
-
-  // Fallback to top products if category count is small
-  const gamingLaptops = rawLaptops && rawLaptops.length >= 4 ? rawLaptops : featuredProducts.slice(0, 4);
-
-  // 3. Fetch Gaming Peripherals & Accessories
-  const rawAccessories = await query<Product[]>(
-    `SELECT p.*,
-            b.name as brand_name, b.slug as brand_slug,
-            c.name as category_name, c.slug as category_slug,
-            (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.is_primary DESC, pi.id ASC LIMIT 1) as primary_image,
-            (SELECT SUM(quantity - reserved_qty) FROM inventory WHERE product_id = p.id) as total_stock
-     FROM products p
-     JOIN brands b ON p.brand_id = b.id
-     JOIN categories c ON p.category_id = c.id
-     WHERE p.status = 'published' AND (
-       c.slug LIKE '%keyboard%' OR
-       c.slug LIKE '%mouse%' OR
-       c.slug LIKE '%headset%' OR
-       c.slug LIKE '%monitor%' OR
-       c.slug LIKE '%accessories%' OR
-       c.slug LIKE '%cooling%' OR
-       c.slug LIKE '%cooler%' OR
-       c.slug LIKE '%chair%' OR
-       c.slug LIKE '%speaker%' OR
-       c.slug LIKE '%ups%' OR
-       p.name LIKE '%keyboard%' OR
-       p.name LIKE '%mouse%' OR
-       p.name LIKE '%headset%' OR
-       p.name LIKE '%monitor%' OR
-       p.name LIKE '%cooler%' OR
-       p.name LIKE '%headphone%'
-     )
-     GROUP BY p.id
-     ORDER BY (p.is_featured = 1 OR p.is_hot = 1) DESC, p.created_at DESC
-     LIMIT 8`
-  );
-
-  const accessoryProducts = rawAccessories && rawAccessories.length >= 4 ? rawAccessories : featuredProducts.slice(2, 6);
-
-  const [managedFeatured, managedLaptops, managedAccessories] = await Promise.all([
-    getLandingProducts('featured', 8),
-    getLandingProducts('gaming_laptops', 8),
-    getLandingProducts('accessories', 8),
-  ]);
   // Landing-page product sections are fully controlled by Admin > Landing page
   // merchandising. An empty saved placement intentionally renders no products.
   const landingFeaturedProducts = managedFeatured;
   const landingGamingLaptops = managedLaptops;
   const landingAccessories = managedAccessories;
-
-  // Fetch official brands
-  const brands = await query<Brand[]>(
-    `SELECT id, name, slug, logo, country, short_desc
-     FROM brands
-     WHERE is_active = 1
-     ORDER BY is_featured DESC, name ASC LIMIT 10`
-  );
 
   // Category Icon helper
   const getCatIcon = (slug: string) => {
@@ -244,8 +163,11 @@ export default async function HomePage() {
                     <img
                       src={cat.image}
                       alt=""
+                      width={96}
+                      height={96}
                       className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-sky-50 group-hover:text-sky-600 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-brand-500/10 dark:group-hover:text-brand-400">
@@ -301,7 +223,11 @@ export default async function HomePage() {
               <img
                 src={beforeLaptopBanners[0]?.image_url || '/uploads/banners/banner_1790852883193_714.png'}
                 alt={beforeLaptopBanners[0]?.title || 'Hardware Banner'}
+                width={1200}
+                height={400}
                 className="w-full h-full max-h-[260px] object-cover rounded-2xl sm:rounded-3xl"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
 
@@ -312,7 +238,11 @@ export default async function HomePage() {
               <img
                 src={beforeLaptopBanners[1]?.image_url || '/uploads/banners/banner_1790852945607_5718.png'}
                 alt={beforeLaptopBanners[1]?.title || 'Components Banner'}
+                width={1200}
+                height={400}
                 className="w-full h-full max-h-[260px] object-cover rounded-2xl sm:rounded-3xl"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           </div>
@@ -355,7 +285,11 @@ export default async function HomePage() {
               <img
                 src={afterLaptopBanners[0]?.image_url || '/uploads/banners/banner_1790852302848_6718.png'}
                 alt={afterLaptopBanners[0]?.title || 'Display Gear Banner'}
+                width={1200}
+                height={400}
                 className="w-full h-full max-h-[260px] object-cover rounded-2xl sm:rounded-3xl"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
 
@@ -366,7 +300,11 @@ export default async function HomePage() {
               <img
                 src={afterLaptopBanners[1]?.image_url || '/uploads/banners/banner_1790862505555_6522.png'}
                 alt={afterLaptopBanners[1]?.title || 'Thermal Gear & Chassis Banner'}
+                width={1200}
+                height={400}
                 className="w-full h-full max-h-[260px] object-cover rounded-2xl sm:rounded-3xl"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           </div>
@@ -409,7 +347,11 @@ export default async function HomePage() {
               <img
                 src={afterAccessoriesBanners[0].image_url}
                 alt={afterAccessoriesBanners[0].title || 'Promotional banner'}
+                width={1600}
+                height={500}
                 className="w-full h-auto max-h-[300px] object-cover rounded-2xl sm:rounded-3xl"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           </section>
@@ -476,8 +418,11 @@ export default async function HomePage() {
                       <img
                         src={b.logo}
                         alt={`${b.name} logo`}
+                        width={140}
+                        height={48}
                         className="max-h-10 max-w-[130px] object-contain"
                         loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-brand-400 transition-colors">

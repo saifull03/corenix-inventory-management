@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { query, queryOne } from '@/lib/db';
 import { logAudit } from '@/lib/audit';
 
@@ -96,6 +97,7 @@ export async function POST(req: NextRequest) {
       recordId: newId,
       newData: { title, position, imageUrl },
     });
+    revalidatePath('/', 'page');
 
     return NextResponse.json({ success: true, message: 'Banner created', id: newId });
   } catch (error: any) {
@@ -121,12 +123,14 @@ export async function PATCH(req: NextRequest) {
     // Handle the dedicated active toggle request without swallowing full edits.
     if ('isActive' in fields && Object.keys(fields).length === 1) {
       await query(`UPDATE banners SET is_active = ? WHERE id = ?`, [fields.isActive ? 1 : 0, id]);
+      revalidatePath('/', 'page');
       return NextResponse.json({ success: true, message: `Banner ${fields.isActive ? 'activated' : 'deactivated'}` });
     }
 
     // Handle the dedicated order update request without swallowing full edits.
     if ('orderIndex' in fields && Object.keys(fields).length === 1) {
       await query(`UPDATE banners SET order_index = ? WHERE id = ?`, [fields.orderIndex, id]);
+      revalidatePath('/', 'page');
       return NextResponse.json({ success: true, message: 'Order updated' });
     }
 
@@ -177,6 +181,7 @@ export async function PATCH(req: NextRequest) {
       recordId: id,
       newData: { title, position },
     });
+    revalidatePath('/', 'page');
 
     return NextResponse.json({ success: true, message: 'Banner updated' });
   } catch (error: any) {
@@ -207,6 +212,7 @@ export async function DELETE(req: NextRequest) {
       recordId: Number(id),
       oldData: existing,
     });
+    revalidatePath('/', 'page');
 
     return NextResponse.json({ success: true, message: 'Banner deleted' });
   } catch (error: any) {

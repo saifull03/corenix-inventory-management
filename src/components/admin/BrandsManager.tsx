@@ -367,7 +367,7 @@ export default function BrandsManager({ initialBrands }: Props) {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-brand-500 dark:text-brand-400 text-xs flex-shrink-0 border border-slate-200 dark:border-slate-700/60 overflow-hidden p-1">
                           {b.logo ? (
-                            <img src={b.logo} alt={b.name} className="w-full h-full object-contain" />
+                            <img src={b.logo} alt={b.name} width={40} height={40} className="w-full h-full object-contain" loading="lazy" decoding="async" />
                           ) : (
                             b.name.slice(0, 2).toUpperCase()
                           )}
@@ -589,7 +589,10 @@ export default function BrandsManager({ initialBrands }: Props) {
                       <img
                         src={formLogo}
                         alt="Logo preview"
+                        width={160}
+                        height={80}
                         className="max-h-12 max-w-full object-contain"
+                        decoding="async"
                       />
                     ) : (
                       <div className="text-center text-slate-500 text-[11px] font-medium flex flex-col items-center gap-1">

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { query, queryOne } from '@/lib/db';
 import { logAudit } from '@/lib/audit';
 
@@ -382,6 +383,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       newData: { name, sku, slug, selling_price, status },
     });
 
+    revalidatePath('/', 'page');
     return NextResponse.json({ success: true, message: 'Product updated successfully' });
   } catch (error: any) {
     console.error('Update product error:', error);
@@ -406,6 +408,7 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
       recordId: productId,
     });
 
+    revalidatePath('/', 'page');
     return NextResponse.json({ success: true, message: 'Product archived successfully' });
   } catch (error: any) {
     console.error('Delete product error:', error);
@@ -451,6 +454,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       newData: body,
     });
 
+    revalidatePath('/', 'page');
     return NextResponse.json({ success: true, message: 'Product updated successfully' });
   } catch (error: any) {
     console.error('Patch product error:', error);

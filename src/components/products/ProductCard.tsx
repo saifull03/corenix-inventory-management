@@ -126,10 +126,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=800&q=80'}
             alt={product.name}
+            width={400}
+            height={400}
             className={`w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 ${
               isOutOfStock ? 'opacity-60 grayscale-[30%]' : ''
             }`}
             loading="lazy"
+            decoding="async"
           />
         </Link>
       </div>

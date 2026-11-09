@@ -907,7 +907,7 @@ export default function CreateProductPage() {
                   {formData.primary_image ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={formData.primary_image} alt="Primary" className="w-full h-full object-contain" />
+                      <img src={formData.primary_image} alt="Primary" width={400} height={400} className="w-full h-full object-contain" decoding="async" />
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                         {uploadingPrimary ? (
                           <Loader2 className="w-6 h-6 animate-spin text-white" />
@@ -1033,7 +1033,7 @@ export default function CreateProductPage() {
                     {additionalImages.map((url, idx) => (
                       <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-700 bg-slate-900 aspect-square">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-contain" />
+                        <img src={url} alt={`Gallery ${idx + 1}`} width={160} height={160} className="w-full h-full object-contain" loading="lazy" decoding="async" />
 
                         {/* Hover overlay with actions */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5">

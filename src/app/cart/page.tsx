@@ -97,7 +97,11 @@ export default function CartPage() {
                       <img
                         src={item.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=400&q=80'}
                         alt={item.name}
+                        width={80}
+                        height={80}
                         className="w-16 h-16 sm:w-20 sm:h-20 object-contain bg-slate-50 dark:bg-navy-950 rounded-2xl p-2 border border-slate-200 dark:border-slate-800 shrink-0"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="min-w-0 flex-1">
                         <Link

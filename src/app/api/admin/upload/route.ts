@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import sharp from 'sharp';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,8 +33,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const bytes = Buffer.from(await file.arrayBuffer());
+    const isSvg = file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg');
+    const width = safeFolder === 'banners' ? 1600 : safeFolder === 'brands' ? 400 : 800;
+    const output = isSvg
+      ? bytes
+      : await sharp(bytes, { animated: false })
+        .resize({ width, withoutEnlargement: true, fit: 'inside' })
+        .webp({ quality: 80 })
+        .toBuffer();
+    const outputType = isSvg ? 'image/svg+xml' : 'image/webp';
+
     // Build safe filename
-    const ext = file.name.split('.').pop()?.toLowerCase() || (file.type === 'image/svg+xml' ? 'svg' : 'jpg');
+    const ext = isSvg ? 'svg' : 'webp';
     const prefix = safeFolder === 'brands' ? 'brand' : safeFolder === 'products' ? 'prod' : safeFolder === 'categories' ? 'category' : 'banner';
     const safeName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
 
@@ -42,8 +54,7 @@ export async function POST(req: NextRequest) {
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, safeName);
-    const bytes = await file.arrayBuffer();
-    await writeFile(filePath, Buffer.from(bytes));
+    await writeFile(filePath, output);
 
     const publicUrl = `/uploads/${safeFolder}/${safeName}`;
 
@@ -51,8 +62,8 @@ export async function POST(req: NextRequest) {
       success: true,
       url: publicUrl,
       filename: safeName,
-      size: file.size,
-      type: file.type,
+      size: output.length,
+      type: outputType,
     });
   } catch (error: any) {
     console.error('Upload error:', error);

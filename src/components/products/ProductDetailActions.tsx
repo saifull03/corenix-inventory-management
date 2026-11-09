@@ -133,7 +133,11 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
                 <img
                   src={img.image_url}
                   alt={img.alt_text || product.name}
+                  width={64}
+                  height={64}
                   className="w-full h-full object-contain p-1"
+                  loading="lazy"
+                  decoding="async"
                 />
               </button>
             ))}
@@ -156,7 +160,10 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
           <img
             src={selectedImage || product.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=800&q=80'}
             alt={product.name}
+            width={800}
+            height={800}
             className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-300"
+            decoding="async"
           />
 
           {/* Zoom button */}
@@ -180,7 +187,11 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
           <img
             src={selectedImage || product.primary_image || ''}
             alt={product.name}
+            width={1200}
+            height={1200}
             className="max-h-[90vh] max-w-[90vw] object-contain bg-white rounded-xl p-4"
+            loading="lazy"
+            decoding="async"
             onClick={(e) => e.stopPropagation()}
           />
         </div>

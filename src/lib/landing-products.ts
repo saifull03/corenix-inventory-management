@@ -21,7 +21,10 @@ export function ensureLandingProductTable() {
         KEY idx_landing_position (position, is_active, order_index),
         CONSTRAINT fk_landing_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    `).then(() => undefined);
+    `).then(() => undefined).catch((error) => {
+      tableReady = null;
+      throw error;
+    });
   }
   return tableReady;
 }

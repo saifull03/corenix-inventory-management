@@ -939,7 +939,11 @@ export default function PcBuilderPage() {
                         <img
                           src={slot.product.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=200&q=80'}
                           alt={slot.product.name}
+                          width={36}
+                          height={36}
                           className="w-9 h-9 object-contain bg-slate-50 dark:bg-navy-950 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800 flex-shrink-0"
+                          loading="lazy"
+                          decoding="async"
                         />
                         <div className="min-w-0">
                           <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
@@ -1152,9 +1156,13 @@ export default function PcBuilderPage() {
                           <img
                             src={p.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=200&q=80'}
                             alt={p.name}
+                            width={56}
+                            height={56}
                             className={`w-14 h-14 object-contain bg-white dark:bg-navy-950 rounded-xl p-1.5 border border-slate-200 dark:border-slate-800 flex-shrink-0 ${
                               !isEligible ? 'grayscale-[40%] opacity-60' : ''
                             }`}
+                            loading="lazy"
+                            decoding="async"
                           />
                           <div className="min-w-0">
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2">

@@ -154,7 +154,11 @@ export default function Navbar() {
                             <img
                               src={item.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=150&q=80'}
                               alt={item.text}
+                              width={44}
+                              height={44}
                               className="w-full h-full object-contain"
+                              loading="lazy"
+                              decoding="async"
                             />
                           </div>
                         )}

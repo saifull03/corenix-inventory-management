@@ -903,7 +903,11 @@ function AccountPageContent() {
                                             <img
                                               src={item.image_url}
                                               alt={item.product_name}
+                                              width={48}
+                                              height={48}
                                               className="w-full h-full object-contain"
+                                              loading="lazy"
+                                              decoding="async"
                                             />
                                           ) : (
                                             <Package className="w-5 h-5 text-slate-400" />

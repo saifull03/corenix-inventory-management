@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { query, queryOne } from '@/lib/db';
 import { logAudit } from '@/lib/audit';
 
@@ -290,6 +291,7 @@ export async function POST(req: NextRequest) {
       newData: { name, sku, finalSlug, selling_price },
     });
 
+    revalidatePath('/', 'page');
     return NextResponse.json({ success: true, productId, slug: finalSlug });
   } catch (error: any) {
     console.error('Create product error:', error);

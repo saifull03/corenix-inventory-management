@@ -1306,7 +1306,11 @@ export default function PosPage() {
                             <img
                               src={p.primary_image}
                               alt={p.name}
+                              width={160}
+                              height={96}
                               className="w-full h-24 object-contain rounded-lg p-1 bg-slate-50 dark:bg-slate-950"
+                              loading="lazy"
+                              decoding="async"
                             />
                             {/* Serial Badge */}
                             {p.is_serialized && (

@@ -1004,7 +1004,7 @@ export default function StockTransferPage() {
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 overflow-hidden text-slate-400">
                               {p.image ? (
-                                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                <img src={p.image} alt={p.name} width={80} height={80} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                               ) : (
                                 <Package className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                               )}

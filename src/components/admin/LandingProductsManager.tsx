@@ -262,7 +262,17 @@ export default function LandingProductsManager() {
                   {selectedIndex >= 0 ? selectedIndex + 1 : <GripVertical className="mx-auto h-4 w-4" />}
                 </span>
                 <span className="h-12 w-12 shrink-0 border border-slate-200 bg-white p-1 dark:border-slate-700">
-                  {product.primary_image && <img src={product.primary_image} alt="" className="h-full w-full object-contain" />}
+                  {product.primary_image && (
+                    <img
+                      src={product.primary_image}
+                      alt=""
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-contain"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-slate-800 dark:text-slate-100">{product.name}</span>

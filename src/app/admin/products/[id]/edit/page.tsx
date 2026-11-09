@@ -1030,7 +1030,10 @@ export default function EditProductPage() {
                 <img
                   src={formData.primary_image}
                   alt={formData.name || 'Product Preview'}
+                  width={400}
+                  height={400}
                   className="max-h-28 max-w-full object-contain rounded-lg"
+                  decoding="async"
                   onError={(e) => {
                     setImagePreviewFailed(true);
                   }}
@@ -1088,7 +1091,7 @@ export default function EditProductPage() {
                 {galleryImages.map((url, index) => (
                   <div key={`${url}-${index}`} className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-950">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt={`${formData.name} gallery ${index + 1}`} className="h-full w-full object-contain" />
+                    <img src={url} alt={`${formData.name} gallery ${index + 1}`} width={160} height={160} className="h-full w-full object-contain" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                       <button type="button" onClick={() => promoteGalleryImage(url)} className="rounded-md bg-amber-400 px-2 py-1 text-[10px] font-bold text-slate-950">Set primary</button>
                       <button type="button" onClick={() => setGalleryImages(prev => prev.filter((_, i) => i !== index))} className="rounded-md bg-rose-600 px-2 py-1 text-[10px] font-bold text-white">Remove</button>

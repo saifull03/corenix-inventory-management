@@ -136,8 +136,11 @@ export default async function BrandPage({ params, searchParams }: Props) {
               <img
                 src={brand.logo}
                 alt={`${brand.name} logo`}
+                width={160}
+                height={80}
                 className="max-h-12 sm:max-h-16 max-w-[140px] object-contain"
                 loading="lazy"
+                decoding="async"
               />
             </div>
           )}

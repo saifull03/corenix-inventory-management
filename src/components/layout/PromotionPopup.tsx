@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X } from 'lucide-react';
 
 interface PromotionPopupProps {
@@ -47,9 +48,13 @@ export default function PromotionPopup({ bannerId, imageUrl, href = '#', alt = '
   if (!isOpen || !imageUrl) return null;
 
   const image = (
-    <img
+    <Image
       src={imageUrl}
       alt={alt}
+      width={1600}
+      height={900}
+      priority
+      sizes="(max-width: 768px) calc(100vw - 2rem), min(1024px, calc(100vw - 4rem))"
       className="block max-h-[78vh] w-full rounded-lg object-contain"
     />
   );

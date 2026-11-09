@@ -717,7 +717,11 @@ export default function ProductsManager({ initialProducts }: Props) {
                               'https://images.unsplash.com/photo-158720237277-e229f172b9d7?auto=format&fit=crop&w=100&q=80'
                             }
                             alt={p.name}
+                            width={40}
+                            height={40}
                             className="w-10 h-10 object-contain bg-slate-50 dark:bg-navy-950 rounded-lg p-1 border border-slate-200 dark:border-slate-800 flex-shrink-0"
+                            loading="lazy"
+                            decoding="async"
                           />
                           <div className="min-w-0 max-w-xs">
                             <Link

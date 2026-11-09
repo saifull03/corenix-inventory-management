@@ -372,7 +372,11 @@ export default function CategoriesManager({ initialCategories }: Props) {
                     <img
                       src={category.image}
                       alt=""
+                      width={96}
+                      height={96}
                       className="h-full w-full object-contain transition-transform group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-2xl text-slate-400 dark:bg-slate-800">
@@ -699,7 +703,7 @@ export default function CategoriesManager({ initialCategories }: Props) {
                   {formImage && (
                     <div className="mt-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-800/60">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={formImage} alt="" className="h-14 w-14 rounded-lg object-contain bg-white" />
+                      <img src={formImage} alt="" width={56} height={56} className="h-14 w-14 rounded-lg object-contain bg-white" decoding="async" />
                       <span className="text-[10px] text-slate-500 dark:text-slate-400">
                         This image is used only for this category&apos;s featured tile.
                       </span>

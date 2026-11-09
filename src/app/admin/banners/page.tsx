@@ -413,7 +413,11 @@ export default function AdminBannersPage() {
                     <img
                       src={banner.image_url}
                       alt={banner.title}
+                      width={800}
+                      height={450}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -567,7 +571,10 @@ export default function AdminBannersPage() {
                       <img
                         src={previewUrl}
                         alt="Preview"
+                        width={800}
+                        height={450}
                         className="w-full h-48 object-cover"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                         <span className="text-white text-xs font-bold flex items-center gap-2">

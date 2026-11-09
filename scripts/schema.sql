@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `faq_json` JSON NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_categories_active` (`is_active`, `is_featured`, `order_index`),
   FOREIGN KEY (`parent_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -192,6 +193,9 @@ CREATE TABLE IF NOT EXISTS `products` (
   `created_by` INT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_products_status` (`status`, `is_featured`, `is_hot`, `created_at`),
+  KEY `idx_products_category` (`category_id`, `status`),
+  KEY `idx_products_brand` (`brand_id`, `status`),
   FULLTEXT KEY `ft_product_search` (`name`, `model`, `sku`),
   FOREIGN KEY (`brand_id`) REFERENCES `brands`(`id`),
   FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`)
@@ -205,6 +209,7 @@ CREATE TABLE IF NOT EXISTS `product_images` (
   `alt_text` VARCHAR(255) NULL,
   `is_primary` BOOLEAN DEFAULT FALSE,
   `order_index` INT DEFAULT 0,
+  KEY `idx_product_images_product` (`product_id`, `is_primary`, `id`),
   FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -482,7 +487,8 @@ CREATE TABLE IF NOT EXISTS `technicians` (
   `phone` VARCHAR(30) NOT NULL,
   `email` VARCHAR(100) NULL,
   `specialization` VARCHAR(100) DEFAULT 'Hardware Diagnostics',
-  `is_active` BOOLEAN DEFAULT TRUE
+  `is_active` BOOLEAN DEFAULT TRUE,
+  KEY `idx_banners_active` (`is_active`, `position`, `order_index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `service_vendors` (

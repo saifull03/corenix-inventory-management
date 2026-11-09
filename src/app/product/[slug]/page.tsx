@@ -470,7 +470,11 @@ export default async function ProductDetailPage({ params }: Props) {
                     <img
                       src={rp.primary_image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=200&q=80'}
                       alt={rp.name}
+                      width={56}
+                      height={56}
                       className="w-14 h-14 object-contain bg-white dark:bg-slate-900 rounded-lg p-1 border border-slate-200 dark:border-slate-700 flex-shrink-0"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="flex-1 min-w-0">
                       <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#2340D0] dark:group-hover:text-[#4F6BEA] line-clamp-2 leading-snug">{rp.name}</h4>
