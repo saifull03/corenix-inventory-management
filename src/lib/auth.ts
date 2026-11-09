@@ -68,22 +68,31 @@ export async function getCurrentCustomer(): Promise<any | null> {
 }
 
 export async function getAuthSession() {
-  const staff = await getCurrentUser();
-  if (staff) {
-    return {
-      authenticated: true,
-      userType: 'staff' as const,
-      user: staff,
-    };
+  const cookieStore = await cookies();
+  const token = cookieStore.get('corenix_token')?.value || cookieStore.get('corenix_cust_token')?.value;
+  const decoded = token ? verifyToken(token) : null;
+
+  if (decoded?.type === 'staff') {
+    const staff = await queryOne<any>(
+      `SELECT u.id, u.name, u.email, u.phone, u.role_id, r.name as role_name, r.slug as role_slug,
+              u.branch_id, b.name as branch_name, b.code as branch_code, u.status, u.avatar
+       FROM users u
+       JOIN roles r ON u.role_id = r.id
+       LEFT JOIN branches b ON u.branch_id = b.id
+       WHERE u.id = ? AND u.status = 'active'`,
+      [decoded.userId]
+    );
+    if (staff) return { authenticated: true, userType: 'staff' as const, user: staff };
+  } else if (decoded?.type === 'customer') {
+    const customer = await queryOne<any>(
+      `SELECT id, name, email, phone, is_verified, reward_points, status, created_at
+       FROM customers
+       WHERE id = ? AND status = 'active'`,
+      [decoded.userId]
+    );
+    if (customer) return { authenticated: true, userType: 'customer' as const, user: customer };
   }
-  const customer = await getCurrentCustomer();
-  if (customer) {
-    return {
-      authenticated: true,
-      userType: 'customer' as const,
-      user: customer,
-    };
-  }
+
   return {
     authenticated: false,
     userType: null,
@@ -98,7 +107,6 @@ export {
   canPurchaseProducts,
   isStoreManagerOnly,
 } from './permissions';
-
 
 
 

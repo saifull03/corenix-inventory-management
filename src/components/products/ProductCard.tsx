@@ -78,8 +78,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <article className="group pcard flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_3px_12px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_8px_20px_rgba(15,23,42,0.14)] dark:border-slate-700/80 dark:bg-navy-900 dark:shadow-[0_3px_12px_rgba(0,0,0,0.2)] dark:hover:border-slate-600 dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.3)]">
-      <div className="media relative h-56 bg-white dark:bg-slate-100 p-5 flex items-center justify-center overflow-hidden">
+    <article className="group pcard flex min-w-0 flex-col overflow-hidden rounded-[24px] border border-slate-200/90 bg-white shadow-[0_4px_14px_rgba(15,23,42,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] dark:border-slate-700/80 dark:bg-navy-900 dark:shadow-[0_4px_14px_rgba(0,0,0,0.2)] dark:hover:border-slate-600 dark:hover:shadow-[0_10px_24px_rgba(0,0,0,0.3)]">
+      <div className="media relative h-64 bg-white p-7 sm:h-72 sm:p-8 dark:bg-slate-100">
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start pointer-events-none">
           {isEmiEligible && (
             <span className="bg-white/90 text-slate-600 border border-slate-200 font-semibold text-[10px] px-2 py-1 rounded-full">
@@ -120,7 +120,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Product Photo */}
         <Link
           href={`/product/${product.slug}`}
-          className="w-full h-full flex items-center justify-center p-2"
+          className="h-full w-full flex items-center justify-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -128,7 +128,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             width={400}
             height={400}
-            className={`w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 ${
+            className={`h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-105 ${
               isOutOfStock ? 'opacity-60 grayscale-[30%]' : ''
             }`}
             loading="lazy"
@@ -137,8 +137,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-      <div className="pbody px-4 pb-4 pt-2 flex flex-col gap-2">
-        <h4 className="ptitle text-lg font-bold text-slate-900 dark:text-white leading-tight line-clamp-1 min-h-[24px]">
+      <div className="pbody flex flex-col gap-2 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
+        <h4 className="ptitle min-h-[26px] text-lg font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">
           <Link
             href={`/product/${product.slug}`}
             title={product.name}
@@ -148,27 +148,27 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         </h4>
 
-        <div className="price flex flex-wrap items-center gap-x-2 gap-y-1">
+        <div className="price flex w-full flex-col items-start gap-2">
           {isCallForPrice ? (
-            <span className="text-lg font-bold text-slate-900 dark:text-white">
+            <span className="text-xl font-bold text-slate-900 dark:text-white">
               Call for price
             </span>
           ) : (
-            <div className="price-row flex flex-wrap items-center gap-2">
-              <span className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">
+            <>
+              <span className="block text-xl font-bold text-slate-900 dark:text-white tabular-nums">
                 ৳{currentPrice.toLocaleString('en-US')}
               </span>
               {hasDiscount && (
-                <span className="old text-sm text-slate-500 dark:text-slate-400 line-through tabular-nums">
-                  ৳{regularPrice.toLocaleString('en-US')}
-                </span>
+                <div className="flex w-full flex-wrap items-center gap-2">
+                  <span className="old text-base text-slate-500 dark:text-slate-400 line-through tabular-nums">
+                    ৳{regularPrice.toLocaleString('en-US')}
+                  </span>
+                  <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    ৳ {savingsAmount.toLocaleString('en-US')} OFF
+                  </span>
+                </div>
               )}
-              {hasDiscount && (
-                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                  ৳ {savingsAmount.toLocaleString('en-US')} OFF
-                </span>
-              )}
-            </div>
+            </>
           )}
         </div>
       </div>
