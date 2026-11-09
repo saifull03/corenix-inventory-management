@@ -134,11 +134,15 @@ export default async function ProductDetailPage({ params }: Props) {
   });
   const related = Array.from(relatedMap.values());
 
-  const currentPrice = product.discount_price || product.selling_price;
-  const regularPrice = product.selling_price;
-  const discountAmount = product.discount_price ? regularPrice - product.discount_price : 0;
-  const discountPercent = product.discount_price && regularPrice > 0
-    ? Math.round(((regularPrice - product.discount_price) / regularPrice) * 100)
+  const regularPrice = Number(product.selling_price || 0);
+  const rawDiscount = (product.discount_price !== null && product.discount_price !== undefined)
+    ? Number(product.discount_price)
+    : 0;
+  const hasDiscount = !isNaN(rawDiscount) && rawDiscount > 0 && regularPrice > 0 && rawDiscount < regularPrice;
+  const currentPrice = hasDiscount ? rawDiscount : regularPrice;
+  const discountAmount = hasDiscount ? regularPrice - currentPrice : 0;
+  const discountPercent = hasDiscount && regularPrice > 0
+    ? Math.round((discountAmount / regularPrice) * 100)
     : 0;
   const keyFeatures: string[] = typeof (product as any).key_features_json === 'string'
     ? JSON.parse((product as any).key_features_json || '[]')
@@ -217,7 +221,7 @@ export default async function ProductDetailPage({ params }: Props) {
                       ৳{currentPrice.toLocaleString()}
                     </span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">(Cash Price)</span>
-                    {product.discount_price && product.discount_price < product.selling_price && (
+                    {hasDiscount && (
                       <span className="text-base text-slate-400 dark:text-slate-500 line-through font-mono">
                         ৳{regularPrice.toLocaleString()}
                       </span>

@@ -32,8 +32,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Pricing calculations
   const regularPrice = Number(product.selling_price || 0);
-  const currentPrice = Number(product.discount_price || product.selling_price || 0);
-  const hasDiscount = Boolean(product.discount_price && product.discount_price < product.selling_price);
+  const rawDiscount = (product.discount_price !== null && product.discount_price !== undefined)
+    ? Number(product.discount_price)
+    : 0;
+  const hasDiscount = !isNaN(rawDiscount) && rawDiscount > 0 && regularPrice > 0 && rawDiscount < regularPrice;
+  const currentPrice = hasDiscount ? rawDiscount : regularPrice;
   const savingsAmount = hasDiscount ? regularPrice - currentPrice : 0;
 
   // 0% EMI eligibility (Standard BD retail rule: items ৳5,000+ or marked eligible)

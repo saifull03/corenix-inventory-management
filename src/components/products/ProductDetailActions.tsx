@@ -31,9 +31,12 @@ export default function ProductDetailActions({ product, allImages = [] }: Props)
   );
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const currentPrice = Number(product.discount_price || product.selling_price || 0);
   const regularPrice = Number(product.selling_price || 0);
-  const hasDiscount = Boolean(product.discount_price && product.discount_price < product.selling_price);
+  const rawDiscount = (product.discount_price !== null && product.discount_price !== undefined)
+    ? Number(product.discount_price)
+    : 0;
+  const hasDiscount = !isNaN(rawDiscount) && rawDiscount > 0 && regularPrice > 0 && rawDiscount < regularPrice;
+  const currentPrice = hasDiscount ? rawDiscount : regularPrice;
   const discountPercent = hasDiscount && regularPrice > 0
     ? Math.round(((regularPrice - currentPrice) / regularPrice) * 100)
     : 0;

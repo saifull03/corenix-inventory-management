@@ -188,7 +188,7 @@ export default function Navbar() {
                           <div className="text-xs font-bold text-sky-600 dark:text-brand-400">
                             ৳{(item.discount_price || item.price)?.toLocaleString()}
                           </div>
-                          {item.discount_price && item.price && item.discount_price < item.price && (
+                          {item.discount_price && item.price && Number(item.discount_price) < Number(item.price) && (
                             <div className="text-[10px] text-slate-400 line-through">
                               ৳{item.price.toLocaleString()}
                             </div>
