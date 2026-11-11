@@ -32,10 +32,26 @@ export default function CheckoutPage() {
 
   // Auto-fill customer profile details if logged in
   useEffect(() => {
+    // Instant hydrate from session storage to avoid waiting for network
+    try {
+      const cached = sessionStorage.getItem('corenix_user_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.authenticated && parsed.user) {
+          if (parsed.user.name) setName(parsed.user.name);
+          if (parsed.user.email) setEmail(parsed.user.email);
+          if (parsed.user.phone) setPhone(parsed.user.phone);
+        }
+      }
+    } catch {}
+
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated && data.user) {
+          try {
+            sessionStorage.setItem('corenix_user_session', JSON.stringify(data));
+          } catch {}
           if (data.user.name) setName(data.user.name);
           if (data.user.email) setEmail(data.user.email);
           if (data.user.phone) setPhone(data.user.phone);

@@ -90,16 +90,36 @@ function AccountPageContent() {
 
   const checkSession = async () => {
     try {
-      setIsLoadingSession(true);
+      // Instant hydrate from session storage
+      try {
+        const cached = sessionStorage.getItem('corenix_user_session');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.authenticated) {
+            setSession(parsed);
+            setIsLoadingSession(false);
+            if (parsed.userType === 'customer') {
+              fetchCustomerData();
+            }
+          }
+        }
+      } catch {}
+
       const res = await fetch('/api/auth/me');
       const data = await res.json();
       if (data.authenticated) {
         setSession(data);
+        try {
+          sessionStorage.setItem('corenix_user_session', JSON.stringify(data));
+        } catch {}
         if (data.userType === 'customer') {
           fetchCustomerData();
         }
       } else {
         setSession({ authenticated: false, userType: null, user: null });
+        try {
+          sessionStorage.removeItem('corenix_user_session');
+        } catch {}
       }
     } catch (err) {
       console.error('Session check failed', err);

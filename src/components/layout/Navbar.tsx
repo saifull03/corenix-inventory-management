@@ -47,10 +47,28 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Instant hydrate from session storage to eliminate perceived auth latency
+    try {
+      const cached = sessionStorage.getItem('corenix_user_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.authenticated) setSession(parsed);
+      }
+    } catch {}
+
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
-        if (data.authenticated) setSession(data);
+        if (data.authenticated) {
+          setSession(data);
+          try {
+            sessionStorage.setItem('corenix_user_session', JSON.stringify(data));
+          } catch {}
+        } else {
+          try {
+            sessionStorage.removeItem('corenix_user_session');
+          } catch {}
+        }
       })
       .catch(() => {});
   }, []);

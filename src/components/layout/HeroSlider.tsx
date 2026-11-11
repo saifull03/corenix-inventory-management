@@ -201,13 +201,13 @@ export default function HeroSlider({
       : DEFAULT_COLLAGE_PROMOS.slice(0, 2);
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] overflow-hidden px-4 py-4 sm:py-5">
-      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-3.5 sm:gap-4 lg:grid-cols-12">
+    <div className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:py-5">
+      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-3.5 sm:gap-4 lg:grid-cols-12 lg:h-[390px] xl:h-[450px]">
         {/* ========================================================================= */}
-        {/* LEFT HALF / AREA: INTERACTIVE SLIDER CAROUSEL (Approx. 65% width)        */}
+        {/* LEFT HALF / AREA: INTERACTIVE SLIDER CAROUSEL                            */}
         {/* ========================================================================= */}
         <div
-          className="relative flex min-w-0 aspect-[4/3] min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/60 bg-navy-950 shadow-lg sm:aspect-[16/9] sm:rounded-3xl dark:border-slate-800/80 lg:col-span-7 xl:col-span-8"
+          className="relative flex min-w-0 min-h-0 w-full flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/60 bg-navy-950 shadow-lg aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto lg:h-full sm:rounded-3xl dark:border-slate-800/80 lg:col-span-7 xl:col-span-8"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={handleTouchStart}
@@ -361,12 +361,12 @@ export default function HeroSlider({
         {/* ========================================================================= */}
         {/* RIGHT HALF / AREA: 2 COLLAGE PROMOTIONAL PICTURES (LINK ONLY, NO BLUR)   */}
         {/* ========================================================================= */}
-        <div className="grid min-w-0 min-h-0 grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:flex lg:flex-col xl:col-span-4">
+        <div className="grid min-w-0 min-h-0 w-full grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4 lg:col-span-5 xl:col-span-4 lg:flex lg:flex-col lg:h-full">
           {displayCollageBanners.map((promo, idx) => (
             <Link
               key={promo.id || idx}
               href={promo.link_url || '/products'}
-              className="group relative block min-w-0 max-w-full aspect-[16/9] min-h-0 flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:min-h-[210px] sm:rounded-3xl lg:min-h-0 dark:border-slate-800/90"
+              className="group relative block w-full min-w-0 max-w-full aspect-[16/9] lg:aspect-auto min-h-0 flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-navy-950 shadow-md transition-shadow duration-300 hover:border-sky-500/50 hover:shadow-xl sm:rounded-3xl dark:border-slate-800/90"
             >
               {/* 100% Crisp, Clean Picture - NO TEXT, NO BLACK BLUR */}
               <Image

@@ -67,10 +67,47 @@ export async function getCurrentCustomer(): Promise<any | null> {
   return customer || null;
 }
 
+interface CachedSession {
+  data: {
+    authenticated: boolean;
+    userType: 'staff' | 'customer' | null;
+    user: any | null;
+  };
+  expiresAt: number;
+}
+
+const sessionCache = new Map<string, CachedSession>();
+
 export async function getAuthSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get('corenix_token')?.value || cookieStore.get('corenix_cust_token')?.value;
-  const decoded = token ? verifyToken(token) : null;
+  if (!token) {
+    return {
+      authenticated: false,
+      userType: null,
+      user: null,
+    };
+  }
+
+  const now = Date.now();
+  const cached = sessionCache.get(token);
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+
+  // Prune cache if it gets large
+  if (sessionCache.size > 200) {
+    for (const [k, v] of sessionCache.entries()) {
+      if (v.expiresAt <= now) sessionCache.delete(k);
+    }
+  }
+
+  const decoded = verifyToken(token);
+  let sessionResult: { authenticated: boolean; userType: 'staff' | 'customer' | null; user: any | null } = {
+    authenticated: false,
+    userType: null,
+    user: null,
+  };
 
   if (decoded?.type === 'staff') {
     const staff = await queryOne<any>(
@@ -82,7 +119,9 @@ export async function getAuthSession() {
        WHERE u.id = ? AND u.status = 'active'`,
       [decoded.userId]
     );
-    if (staff) return { authenticated: true, userType: 'staff' as const, user: staff };
+    if (staff) {
+      sessionResult = { authenticated: true, userType: 'staff', user: staff };
+    }
   } else if (decoded?.type === 'customer') {
     const customer = await queryOne<any>(
       `SELECT id, name, email, phone, is_verified, reward_points, status, created_at
@@ -90,14 +129,14 @@ export async function getAuthSession() {
        WHERE id = ? AND status = 'active'`,
       [decoded.userId]
     );
-    if (customer) return { authenticated: true, userType: 'customer' as const, user: customer };
+    if (customer) {
+      sessionResult = { authenticated: true, userType: 'customer', user: customer };
+    }
   }
 
-  return {
-    authenticated: false,
-    userType: null,
-    user: null,
-  };
+  // Cache session for 20 seconds to eliminate redundant database queries across components
+  sessionCache.set(token, { data: sessionResult, expiresAt: now + 20000 });
+  return sessionResult;
 }
 
 export {

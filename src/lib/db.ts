@@ -13,6 +13,8 @@ const pool = global._mysqlPool || mysql.createPool({
   database: process.env.DB_NAME || 'corenix_db',
   waitForConnections: true,
   connectionLimit: 20,
+  maxIdle: 10,
+  idleTimeout: 60000,
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
